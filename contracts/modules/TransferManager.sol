@@ -66,6 +66,8 @@ contract TransferManager is BaseModule, RelayerModule, OnlyOwnerModule, BaseTran
     event PendingTransferExecuted(address indexed wallet, bytes32 indexed id);
     event PendingTransferCanceled(address indexed wallet, bytes32 indexed id);
 
+    event Debug(uint256 indexed n);
+
     // *************** Modifiers *************************** //
 
     /**
@@ -160,22 +162,33 @@ contract TransferManager is BaseModule, RelayerModule, OnlyOwnerModule, BaseTran
         onlyWalletOwner(_wallet)
         onlyWhenUnlocked(_wallet)
     {
+        emit Debug(100);
         if(isWhitelisted(_wallet, _to)) {
+            emit Debug(101);
             // transfer to whitelist
             doTransfer(_wallet, _token, _to, _amount, _data);
+            emit Debug(102);
         }
         else {
+            emit Debug(103);
             uint256 etherAmount = (_token == ETH_TOKEN) ? _amount : priceProvider.getEtherValue(_amount, _token);
+            emit Debug(104);
             if (checkAndUpdateDailySpent(_wallet, etherAmount)) {
+                emit Debug(105);
                 // transfer under the limit
                 doTransfer(_wallet, _token, _to, _amount, _data);
+                emit Debug(106);
             }
             else {
+                emit Debug(107);
                 // transfer above the limit
                 (bytes32 id, uint256 executeAfter) = addPendingAction(ActionType.Transfer, _wallet, _token, _to, _amount, _data);
+                emit Debug(108);
                 emit PendingTransferCreated(address(_wallet), id, executeAfter, _token, _to, _amount, _data);
+                emit Debug(109);
             }
         }
+        emit Debug(110);
     }
 
     /**

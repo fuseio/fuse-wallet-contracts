@@ -7,6 +7,8 @@ import "./common/OnlyOwnerModule.sol";
 contract CommunityManager is BaseModule, RelayerModule, OnlyOwnerModule {
   bytes32 constant NAME = "CommunityManager";
 
+  event Debug(uint256 indexed n);
+
   constructor(
     ModuleRegistry _registry
   )
@@ -22,6 +24,8 @@ contract CommunityManager is BaseModule, RelayerModule, OnlyOwnerModule {
     external
     onlyWalletOwner(_wallet)
   {
+    emit Debug(200);
     _wallet.invoke(_community, 0, abi.encodeWithSignature("join()"));
+    emit Debug(201);
   }
 }

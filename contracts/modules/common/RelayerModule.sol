@@ -21,6 +21,8 @@ contract RelayerModule is Module {
 
     event TransactionExecuted(address indexed wallet, bool indexed success, bytes32 signedHash);
 
+    event Debug(uint256 indexed n);
+
     /**
      * @dev Throws if the call did not go through the execute() method.
      */
@@ -73,17 +75,29 @@ contract RelayerModule is Module {
         returns (bool success)
     {
         uint startGas = gasleft();
+        emit Debug(1);
         bytes32 signHash = getSignHash(address(this), address(_wallet), 0, _data, _nonce, _gasPrice, _gasLimit);
+        emit Debug(2);
         require(checkAndUpdateUniqueness(_wallet, _nonce, signHash), "RM: Duplicate request");
+        emit Debug(3);
         require(verifyData(address(_wallet), _data), "RM: the wallet authorized is different then the target of the relayed data");
+        emit Debug(4);
         uint256 requiredSignatures = getRequiredSignatures(_wallet, _data);
-        require((requiredSignatures * 65) == _signatures.length, "RM: Invalid Signature Count");
-        require(verifyRefund(_wallet, _gasLimit, _gasPrice, requiredSignatures), "RM: Impossible refund");
-        require(requiredSignatures == 0 || validateSignatures(_wallet, _data, signHash, _signatures), "RM: Invalid signatures");
-
-        // solium-disable-next-line security/no-call-value
-        (success,) = address(this).call(_data);
-        refund(_wallet, startGas - gasleft(), _gasPrice, _gasLimit, requiredSignatures, msg.sender);
+        emit Debug(5);
+        if((requiredSignatures * 65) == _signatures.length) {
+            emit Debug(6);
+            if(verifyRefund(_wallet, _gasLimit, _gasPrice, requiredSignatures)) {
+                emit Debug(7);
+                if(requiredSignatures == 0 || validateSignatures(_wallet, _data, signHash, _signatures)) {
+                    emit Debug(8);
+                    // solium-disable-next-line security/no-call-value
+                    (success,) = address(this).call(_data);
+                    emit Debug(9);
+                    refund(_wallet, startGas - gasleft(), _gasPrice, _gasLimit, requiredSignatures, msg.sender);
+                    emit Debug(10);
+                }
+            }
+        }
 
         emit TransactionExecuted(address(_wallet), success, signHash);
     }

@@ -1,7 +1,7 @@
 {
   "ENS": {
     "deployOwnRegistry": true,
-    "ensRegistry": "0x7795Ba4638EB8d3DDE673b9cCc4B3854A3D3AdC6",
+    "ensRegistry": "0xd2BAB7e137637CDa413cDd8016D7777B2C23F2d0",
     "domain": "fuse.eth"
   },
   "backend": {
@@ -46,7 +46,7 @@
   },
   "Kyber": {
     "deployOwn": true,
-    "contract": "0xE6c3EBF7d495227Bca1d282dc6Df03E523E748b1"
+    "contract": "0x9436C47CfC1cfe545d3E4fFf10073C59De9AEE76"
   },
   "CryptoKitties": {
     "contract": "0x0000000000000000000000000000000000000000"
@@ -69,33 +69,35 @@
     }
   },
   "contracts": {
-    "MultiSigWallet": "0x122FFF88472Ab29528fbd067E6f2188a92550114",
-    "WalletFactory": "0x841C3F8138315EB5008dB8BB1457B58a8bF53bac",
-    "ENSResolver": "0xa60D2f6D12b27eDa971db8e40830718d9F13eae9",
-    "ENSManager": "0xe346A21D3e5AB293a86f7Af5AdF43d09Bc7dB3dE",
-    "TokenPriceProvider": "0xa1DdFdA94781a5b4e0Af8aBd6E18c5948876d087",
-    "ModuleRegistry": "0x357561F77E516D901744e7C41C1A0ADBCFb5f952",
-    "DappRegistry": "0x1b92ff4257B1E122d453d99057cA9D47921b0d73",
-    "BaseWallet": "0x08F0C3479D263eC44f1925BeFc5a239B12531cA2",
-    "CompoundRegistry": "0x06E366da0294c1FFfB1eD89F8C8d074edF1BbFb4"
+    "MultiSigWallet": "0x94AfC8B0c3843Bd2a50f84D3B871aEa920653245",
+    "WalletFactory": "0xe02A2163629174937487f994E20214631540fB65",
+    "ENSResolver": "0x86779e9d7C21365DBF213129eF2CdCd7Bb5Fcd37",
+    "ENSManager": "0x1819dc49DBcE4D91dA0d2B70C4D75425A9af56DC",
+    "TokenPriceProvider": "0x765747488802D2a1BECEa2008A5fe628A6400034",
+    "ModuleRegistry": "0xEe4E17f66A74DF89B22616c4bBaD0c4Aa36981E9",
+    "DappRegistry": "0x578a6060C659e9F5460aa595058D80E7c5EFfC3f",
+    "BaseWallet": "0xBe724f65dfc1fF16a6607C920948267453837c0D",
+    "CompoundRegistry": "0x19E995D135fCda775F4dD4bd775724f118458556"
   },
   "modules": {
-    "GuardianStorage": "0x6420A2fB8d2af2bF2cC0CCC7Fd9c94D7d55Ed0D9",
-    "TransferStorage": "0x79ede733f331b363665DB22bF776cAa20F2896c7",
-    "DappStorage": "0xe716cED3835120AD729117e7aEa216693ADB14b3",
-    "GuardianManager": "0x5C485e2785251168846756D0A3A6Cfeb85A810Fe",
-    "LockManager": "0xe4F584Bf2a5A8DADA389cfBFC2dE2Bb0f47a66e6",
-    "RecoveryManager": "0xA9a098BbdDF402b6E6c7d30FE1ac389A479b3A72",
-    "ApprovedTransfer": "0x506D57084f45D339a9918541F83ECFeBFFEdDC1f",
+    "GuardianStorage": "0x168CaBbe6422Bd22d0372Ff0C55eA3F75Af5e14F",
+    "TransferStorage": "0x1E1925067a92d3493410Ba7D9644e46f6859A52F",
+    "DappStorage": "0x4f80bBe977d57ee07345C722C54F1cA67f79AA56",
+    "GuardianManager": "0x679E022553079B852e42389F93F7A6f7c1609fF5",
+    "LockManager": "0xcCbaBE688099E5e7431B6bF49235633455E93066",
+    "RecoveryManager": "0xD97AEc8D47523676267a5b827FADD9f0c476849c",
+    "ApprovedTransfer": "0x250E512DA08B60800e6d1EC60a83e043a7d57190",
     "TokenTransfer": "0xb81eC49d93Ed336771C1bC6448bFB262403fEef4",
     "DappManager": "0x0cA65A4a7338Db5E94Aa083B3a60eEB75074f831",
-    "TokenExchanger": "0x39a616389882558eEA5667559F44A10b78369325",
-    "NftTransfer": "0x88869da8910bD62aF0a35A2A5c79472B16dc3fa7",
-    "MakerManager": "0x711a54ca25fBbd3bB7dc95348D5e6448307f6FD3",
+    "TokenExchanger": "0xa71B5347c64503190A4AF3BF724531E8bbB68b19",
+    "NftTransfer": "0x80Cb00CE9bdCc767b44D001CDB48E3Fe4b49411D",
+    "MakerManager": "0x4993e3EB76e0D7D14959E80e5eE30c5e62bBEf65",
     "MakerV2Manager": "0x0a78ECd7db74B00C010177E930EA429F0C7e0242",
-    "CompoundManager": "0x512CAf50EBEBD93f41505cdD4Ab8b403681A1a00",
-    "UniswapManager": "0xc37dbEe0b050F94317b7DF676824c4E7daE6FA8b",
-    "TransferManager": "0x8064269E08232d7520a2e23F4707605bDa492573"
+    "CompoundManager": "0x9825b0f2cD989aDb28466f0B5A42dC67329605Fa",
+    "UniswapManager": "0xAfb35B02fA63053aC3698f15673707F1513cB26E",
+    "TransferManager": "0x667814b1A1953b20dffCF95a899B807fC2373D70",
+    "CommunityManager": "0xD62FB418895E17b00F0dED62Ae342C340B69c346",
+    "WalletOwnershipManager": "0xFBf82e62b656252AF865F06ec1138a049c367AD3"
   },
-  "gitCommit": "11bcf028073edd44272c335e09660880322ec3f5"
+  "gitCommit": "5f18ea8f2b6c4a04dde06c623276de8589ef3553"
 }

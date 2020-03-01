@@ -1,7 +1,7 @@
 pragma solidity ^0.5.4;
-import "../../wallet/BaseWallet.sol";
-import "../../modules/common/BaseModule.sol";
-import "../../modules/common/RelayerModule.sol";
+import "../../../wallet/BaseWallet.sol";
+import "../../../modules/common/BaseModule.sol";
+import "../../../modules/common/RelayerModule.sol";
 
 /**
  * @title TestModule
@@ -15,7 +15,7 @@ contract TestModule is BaseModule, RelayerModule {
     bool boolVal;
     uint uintVal;
 
-    constructor(ModuleRegistry _registry, bool _boolVal, uint _uintVal) BaseModule(_registry, NAME) public {
+    constructor(ModuleRegistry _registry, bool _boolVal, uint _uintVal) BaseModule(_registry, GuardianStorage(0), NAME) public {
         boolVal = _boolVal;
         uintVal = _uintVal;
     }

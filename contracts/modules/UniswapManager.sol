@@ -1,11 +1,25 @@
+// Copyright (C) 2018  Argent Labs Ltd. <https://argent.xyz>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 pragma solidity ^0.5.4;
 
-import "../utils/SafeMath.sol";
+import "../../lib/utils/SafeMath.sol";
 import "../wallet/BaseWallet.sol";
 import "./common/BaseModule.sol";
 import "./common/RelayerModule.sol";
 import "./common/OnlyOwnerModule.sol";
-import "../storage/GuardianStorage.sol";
 import "../defi/Invest.sol";
 
 interface UniswapFactory {
@@ -28,8 +42,6 @@ contract UniswapManager is Invest, BaseModule, RelayerModule, OnlyOwnerModule {
 
     bytes32 constant NAME = "UniswapInvestManager";
 
-    // The Guardian storage
-    GuardianStorage public guardianStorage;
     // The Uniswap Factory contract
     UniswapFactory public uniswapFactory;
 
@@ -38,24 +50,14 @@ contract UniswapManager is Invest, BaseModule, RelayerModule, OnlyOwnerModule {
 
     using SafeMath for uint256;
 
-    /**
-     * @dev Throws if the wallet is locked.
-     */
-    modifier onlyWhenUnlocked(BaseWallet _wallet) {
-        // solium-disable-next-line security/no-block-members
-        require(!guardianStorage.isLocked(_wallet), "UniswapManager: wallet must be unlocked");
-        _;
-    }
-
     constructor(
         ModuleRegistry _registry,
         GuardianStorage _guardianStorage,
         UniswapFactory _uniswapFactory
     )
-        BaseModule(_registry, NAME)
+        BaseModule(_registry, _guardianStorage, NAME)
         public
     {
-        guardianStorage = _guardianStorage;
         uniswapFactory = _uniswapFactory;
     }
 
@@ -67,15 +69,15 @@ contract UniswapManager is Invest, BaseModule, RelayerModule, OnlyOwnerModule {
      * @param _token The token address.
      * @param _amount The amount of tokens to invest.
      * @param _period The period over which the tokens may be locked in the investment (optional).
-     * @return The amount of tokens that have been invested. 
+     * @return The amount of tokens that have been invested.
      */
     function addInvestment(
-        BaseWallet _wallet, 
-        address _token, 
-        uint256 _amount, 
+        BaseWallet _wallet,
+        address _token,
+        uint256 _amount,
         uint256 _period
-    ) 
-        external 
+    )
+        external
         onlyWalletOwner(_wallet)
         onlyWhenUnlocked(_wallet)
         returns (uint256 _invested)
@@ -88,13 +90,13 @@ contract UniswapManager is Invest, BaseModule, RelayerModule, OnlyOwnerModule {
      * @dev Removes a fraction of the tokens from an investment.
      * @param _wallet The target wallet.s
      * @param _token The array of token address.
-     * @param _fraction The fraction of invested tokens to exit in per 10000. 
+     * @param _fraction The fraction of invested tokens to exit in per 10000.
      */
     function removeInvestment(
-        BaseWallet _wallet, 
-        address _token, 
+        BaseWallet _wallet,
+        address _token,
         uint256 _fraction
-    ) 
+    )
         external
         onlyWalletOwner(_wallet)
         onlyWhenUnlocked(_wallet)
@@ -111,7 +113,7 @@ contract UniswapManager is Invest, BaseModule, RelayerModule, OnlyOwnerModule {
      * @return The value in tokens of the investment (including interests) and the time at which the investment can be removed.
      */
     function getInvestment(
-        BaseWallet _wallet, 
+        BaseWallet _wallet,
         address _token
     )
         external
@@ -127,7 +129,7 @@ contract UniswapManager is Invest, BaseModule, RelayerModule, OnlyOwnerModule {
     }
 
     /* ****************************************** Uniswap utilities ******************************************* */
- 
+
     /**
      * @dev Adds liquidity to a Uniswap ETH-ERC20 pair.
      * @param _wallet The target wallet
@@ -139,7 +141,7 @@ contract UniswapManager is Invest, BaseModule, RelayerModule, OnlyOwnerModule {
         address _token,
         uint256 _amount
     )
-        internal 
+        internal
         returns (uint256)
     {
         require(_amount > 0, "Uniswap: can't add 0 liquidity");
@@ -147,18 +149,25 @@ contract UniswapManager is Invest, BaseModule, RelayerModule, OnlyOwnerModule {
         require(tokenPool != address(0), "Uniswap: target token is not traded on Uniswap");
 
         uint256 tokenBalance = ERC20(_token).balanceOf(address(_wallet));
-        if(_amount > tokenBalance) {
+        if (_amount > tokenBalance) {
             uint256 ethToSwap = UniswapExchange(tokenPool).getEthToTokenOutputPrice(_amount - tokenBalance);
             require(ethToSwap <= address(_wallet).balance, "Uniswap: not enough ETH to swap");
-            _wallet.invoke(tokenPool, ethToSwap, abi.encodeWithSignature("ethToTokenSwapOutput(uint256,uint256)", _amount - tokenBalance, block.timestamp));
+            invokeWallet(address(_wallet), tokenPool, ethToSwap, abi.encodeWithSignature("ethToTokenSwapOutput(uint256,uint256)", _amount - tokenBalance, block.timestamp));
         }
 
         uint256 tokenLiquidity = ERC20(_token).balanceOf(tokenPool);
         uint256 ethLiquidity = tokenPool.balance;
         uint256 ethToPool = (_amount - 1).mul(ethLiquidity).div(tokenLiquidity);
         require(ethToPool <= address(_wallet).balance, "Uniswap: not enough ETH to pool");
-        _wallet.invoke(_token, 0, abi.encodeWithSignature("approve(address,uint256)", tokenPool, _amount));
-        _wallet.invoke(tokenPool, ethToPool, abi.encodeWithSignature("addLiquidity(uint256,uint256,uint256)",1, _amount, block.timestamp + 1));
+        invokeWallet(address(_wallet), _token, 0, abi.encodeWithSignature("approve(address,uint256)", tokenPool, _amount));
+        invokeWallet(
+            address(_wallet),
+            tokenPool,
+            ethToPool,
+            abi.encodeWithSignature("addLiquidity(uint256,uint256,uint256)",
+            1,
+            _amount,
+            block.timestamp + 1));
         return _amount.mul(2);
     }
 
@@ -178,7 +187,15 @@ contract UniswapManager is Invest, BaseModule, RelayerModule, OnlyOwnerModule {
         address tokenPool = uniswapFactory.getExchange(_token);
         require(tokenPool != address(0), "Uniswap: The target token is not traded on Uniswap");
         uint256 shares = ERC20(tokenPool).balanceOf(address(_wallet));
-        _wallet.invoke(tokenPool, 0, abi.encodeWithSignature("removeLiquidity(uint256,uint256,uint256,uint256)", shares.mul(_fraction).div(10000), 1, 1, block.timestamp + 1));
+        invokeWallet(
+            address(_wallet),
+            tokenPool,
+            0,
+            abi.encodeWithSignature("removeLiquidity(uint256,uint256,uint256,uint256)",
+            shares.mul(_fraction).div(10000),
+            1,
+            1,
+            block.timestamp + 1));
     }
 }
 

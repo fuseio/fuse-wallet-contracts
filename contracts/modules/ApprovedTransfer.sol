@@ -1,10 +1,24 @@
+// Copyright (C) 2018  Argent Labs Ltd. <https://argent.xyz>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 pragma solidity ^0.5.4;
 import "../wallet/BaseWallet.sol";
 import "./common/BaseModule.sol";
 import "./common/RelayerModule.sol";
 import "./common/BaseTransfer.sol";
-import "../storage/GuardianStorage.sol";
-import "../utils/SafeMath.sol";
+import "../../lib/utils/SafeMath.sol";
 import "../utils/GuardianUtils.sol";
 
 /**
@@ -16,22 +30,8 @@ contract ApprovedTransfer is BaseModule, RelayerModule, BaseTransfer {
 
     bytes32 constant NAME = "ApprovedTransfer";
 
-    address constant internal ETH_TOKEN = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    constructor(ModuleRegistry _registry, GuardianStorage _guardianStorage) BaseModule(_registry, _guardianStorage, NAME) public {
 
-    // The Guardian storage
-    GuardianStorage internal guardianStorage;
-
-    /**
-     * @dev Throws if the wallet is locked.
-     */
-    modifier onlyWhenUnlocked(BaseWallet _wallet) {
-        // solium-disable-next-line security/no-block-members
-        require(!guardianStorage.isLocked(_wallet), "AT: wallet must be unlocked");
-        _;
-    }
-
-    constructor(ModuleRegistry _registry, GuardianStorage _guardianStorage) BaseModule(_registry, NAME) public {
-        guardianStorage = _guardianStorage;
     }
 
     /**
@@ -94,21 +94,20 @@ contract ApprovedTransfer is BaseModule, RelayerModule, BaseTransfer {
         bool isGuardian = false;
         for (uint8 i = 0; i < _signatures.length / 65; i++) {
             address signer = recoverSigner(_signHash, _signatures, i);
-            if(i == 0) {
+            if (i == 0) {
                 // AT: first signer must be owner
-                if(!isOwner(_wallet, signer)) {
+                if (!isOwner(_wallet, signer)) {
                     return false;
                 }
-            }
-            else {
+            } else {
                 // "AT: signers must be different"
-                if(signer <= lastSigner) {
+                if (signer <= lastSigner) {
                     return false;
                 }
                 lastSigner = signer;
                 (isGuardian, guardians) = GuardianUtils.isGuardian(guardians, signer);
                 // "AT: signatures not valid"
-                if(!isGuardian) {
+                if (!isGuardian) {
                     return false;
                 }
             }

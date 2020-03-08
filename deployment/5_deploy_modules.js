@@ -12,6 +12,8 @@ const MakerManager = require('../build/MakerManager');
 const CompoundManager = require('../build/CompoundManager');
 const UniswapManager = require('../build/UniswapManager');
 const MakerV2Manager = require('../build/MakerV2Manager');
+const CommunityManager = require('../build/CommunityManager');
+const WalletOwnershipManager = require('../build/WalletOwnershipManager');
 
 const DeployManager = require('../utils/deploy-manager.js');
 
@@ -144,6 +146,20 @@ const deploy = async (network, secret) => {
         config.defi.maker.migration,
         config.defi.maker.pot
     );
+    // Deploy the CommunityManager module
+    const CommunityManagerWrapper = await deployer.deploy(
+        CommunityManager,
+        {},
+        config.contracts.ModuleRegistry,
+        config.modules.GuardianStorage
+    );
+    // Deploy the WalletOwnershipModule
+    const WalletOwnershipManagerWrapper = await deployer.deploy(
+        WalletOwnershipManager,
+        {},
+        config.contracts.ModuleRegistry,
+        config.modules.GuardianStorage
+    );
 
     ///////////////////////////////////////////////////
     // Update config and Upload ABIs
@@ -162,7 +178,9 @@ const deploy = async (network, secret) => {
         MakerManager: MakerManagerWrapper.contractAddress,
         CompoundManager: CompoundManagerWrapper.contractAddress,
         UniswapManager: UniswapManagerWrapper.contractAddress,
-        MakerV2Manager: MakerV2ManagerWrapper.contractAddress
+        MakerV2Manager: MakerV2ManagerWrapper.contractAddress,
+        CommunityManager: CommunityManagerWrapper.contractAddress,
+        WalletOwnershipManager: WalletOwnershipManagerWrapper.contractAddress
     });
 
     const gitHash = require('child_process').execSync('git rev-parse HEAD').toString('utf8').replace(/\n$/, '');
@@ -183,7 +201,9 @@ const deploy = async (network, secret) => {
         abiUploader.upload(MakerManagerWrapper, "modules"),
         abiUploader.upload(CompoundManagerWrapper, "modules"),
         abiUploader.upload(UniswapManagerWrapper, "modules"),
-        abiUploader.upload(MakerV2ManagerWrapper, "modules")
+        abiUploader.upload(MakerV2ManagerWrapper, "modules"),
+        abiUploader.upload(CommunityManagerWrapper, "modules"),
+        abiUploader.upload(WalletOwnershipManagerWrapper, "modules")
     ]);
 
     console.log('Config:', config);

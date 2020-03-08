@@ -22,6 +22,8 @@ const MakerManager = require('../build/MakerManager');
 const CompoundManager = require('../build/CompoundManager');
 const UniswapManager = require('../build/UniswapManager');
 const MakerV2Manager = require('../build/MakerV2Manager');
+const CommunityManager = require('../build/CommunityManager');
+const WalletOwnershipManager = require('../build/WalletOwnershipManager');
 
 const ethers = require('ethers');
 const Table = require('cli-table2');
@@ -71,6 +73,8 @@ class Benchmark {
         this.CompoundManagerWrapper = await this.deployer.wrapDeployedContract(CompoundManager, config.modules.CompoundManager);
         this.UniswapManagerWrapper = await this.deployer.wrapDeployedContract(UniswapManager, config.modules.UniswapManager);
         this.MakerV2ManagerWrapper = await this.deployer.wrapDeployedContract(MakerV2Manager, config.modules.MakerV2Manager);
+        this.CommunityManagerWrapper = await this.deployer.wrapDeployedContract(CommunityManager, config.modules.CommunityManager);
+        this.WalletOwnershipManagerWrapper = await this.deployer.wrapDeployedContract(WalletOwnershipManager, config.modules.WalletOwnershipManager);
 
         this.ModuleRegistryWrapper = await this.deployer.wrapDeployedContract(ModuleRegistry, config.contracts.ModuleRegistry);
         this.DappRegistryWrapper = await this.deployer.wrapDeployedContract(DappRegistry, config.contracts.DappRegistry);
@@ -96,7 +100,9 @@ class Benchmark {
             this.MakerManagerWrapper.contractAddress,
             this.CompoundManagerWrapper.contractAddress,
             this.UniswapManagerWrapper.contractAddress,
-            this.MakerV2ManagerWrapper.contractAddress
+            this.MakerV2ManagerWrapper.contractAddress,
+            this.CommunityManagerWrapper.contractAddress,
+            this.WalletOwnershipManagerWrapper.contractAddress
         ];
 
         const proxy = await this.deployer.deploy(Proxy, {}, this.BaseWalletWrapper.contractAddress);

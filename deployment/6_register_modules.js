@@ -12,6 +12,8 @@ const MakerManager = require('../build/MakerManager');
 const CompoundManager = require('../build/CompoundManager');
 const UniswapManager = require('../build/UniswapManager');
 const MakerV2Manager = require('../build/MakerV2Manager');
+const CommunityManager = require('../build/CommunityManager');
+const WalletOwnershipManager = require('../build/WalletOwnershipManager');
 
 const utils = require('../utils/utilities.js');
 
@@ -47,6 +49,8 @@ const deploy = async (network, secret) => {
     const CompoundManagerWrapper = await deployer.wrapDeployedContract(CompoundManager, config.modules.CompoundManager);
     const UniswapManagerWrapper = await deployer.wrapDeployedContract(UniswapManager, config.modules.UniswapManager);
     const MakerV2ManagerWrapper = await deployer.wrapDeployedContract(MakerV2Manager, config.modules.MakerV2Manager);
+    const CommunityManagerWrapper = await deployer.wrapDeployedContract(CommunityManager, config.modules.CommunityManager);
+    const WalletOwnershipManagerWrapper = await deployer.wrapDeployedContract(WalletOwnershipManager, config.modules.WalletOwnershipManager);
 
     const ModuleRegistryWrapper = await deployer.wrapDeployedContract(ModuleRegistry, config.contracts.ModuleRegistry);
     const MultiSigWrapper = await deployer.wrapDeployedContract(MultiSig, config.contracts.MultiSigWallet);
@@ -62,7 +66,9 @@ const deploy = async (network, secret) => {
         MakerManagerWrapper,
         CompoundManagerWrapper,
         UniswapManagerWrapper,
-        MakerV2ManagerWrapper
+        MakerV2ManagerWrapper,
+        CommunityManagerWrapper,
+        WalletOwnershipManagerWrapper
     ];
 
     ////////////////////////////////////

@@ -8,9 +8,10 @@ contract WalletOwnershipManager is BaseModule, RelayerModule, OnlyOwnerModule {
   bytes32 constant NAME = "WalletOwnershipManager";
 
   constructor(
-    ModuleRegistry _registry
+    ModuleRegistry _registry,
+    GuardianStorage _guardianStorage
   )
-    BaseModule(_registry, NAME)
+    BaseModule(_registry, _guardianStorage, NAME)
     public
   {
   }

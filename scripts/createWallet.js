@@ -7,6 +7,8 @@ const MultiSigWallet = require('../build/MultiSigWallet');
 const MultisigExecutor = require('../utils/multisigexecutor.js');
 const DeployManager = require('../utils/deploy-manager.js');
 
+const { formatBytes32String } = require('ethers').utils;
+
 async function main() {
 
     // Read Command Line Arguments

@@ -33,7 +33,7 @@ describe("Test TransferCommunityManager", function () {
     let spender = accounts[4].signer;
     let networkAdmin = accounts[5].signer;
     let communityAdmin = accounts[6].signer;
-    let kyber, registry, priceProvider, transferStorage, guardianStorage, transferModule, communityMockWithFees, wallet;
+    let kyber, registry, priceProvider, transferStorage, guardianStorage, transferModule, communityMock, wallet;
 
     before(async () => {
         deployer = manager.newDeployer();
@@ -55,10 +55,8 @@ describe("Test TransferCommunityManager", function () {
             ROLE_TO_CHECK
         );
 
-        communityMockWithFees = await deployer.deploy(CommunityMock, {},
+        communityMock = await deployer.deploy(CommunityMock, {},
           true)
-        communityMockWithoutFees = await deployer.deploy(CommunityMock, {},
-            false)
         await registry.registerModule(transferModule.contractAddress, ethers.utils.formatBytes32String("CommunityTransferManager"));
     });
 
@@ -78,7 +76,7 @@ describe("Test TransferCommunityManager", function () {
             let adminFundsBefore = (token == ETH_TOKEN ? await deployer.provider.getBalance(communityAdmin.address) : await token.balanceOf(communityAdmin.address));
             let networkAdminFundsBefore = (token == ETH_TOKEN ? await deployer.provider.getBalance(networkAdmin.address) : await token.balanceOf(networkAdmin.address));
 
-            const params = [wallet.contractAddress, token == ETH_TOKEN ? ETH_TOKEN : token.contractAddress, to.address, amount, communityMockWithFees.contractAddress, communityAdmin.address, cashbackPercentage, adminFeePercentage, ZERO_BYTES32];
+            const params = [wallet.contractAddress, token == ETH_TOKEN ? ETH_TOKEN : token.contractAddress, to.address, amount, communityMock.contractAddress, communityAdmin.address, cashbackPercentage, adminFeePercentage, ZERO_BYTES32];
             let txReceipt;
             if (relayed) {
                 txReceipt = await manager.relay(transferModule, 'transferTokenWithFees', params, wallet, [signer]);
@@ -115,7 +113,7 @@ describe("Test TransferCommunityManager", function () {
         });
 
         it('when sending to user should not take fees', async () => {
-          await communityMockWithFees.from(owner).setHasRoles(false)
+          await communityMock.from(owner).setHasRoles(false)
           const cashbackPercentage = ethers.utils.bigNumberify('60000000000000000') // 1%
           const adminFeePercentage = ethers.utils.bigNumberify('30000000000000000') // 1%
           await doDirectTransfer({ token: erc20, to: recipient, amount: 100,

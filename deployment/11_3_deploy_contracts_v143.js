@@ -13,7 +13,6 @@ const MODULES_TO_DISABLE = [];
 const BACKWARD_COMPATIBILITY = 1;
 
 const deploy = async (network) => {
-    console.log('HI1')
 
     const newModuleWrappers = [];
     const newVersion = {};
@@ -24,7 +23,6 @@ const deploy = async (network) => {
 
     const manager = new DeployManager(network);
     await manager.setup();
-    console.log('HI2')
 
     const configurator = manager.configurator;
     const deployer = manager.deployer;
@@ -42,13 +40,6 @@ const deploy = async (network) => {
     ////////////////////////////////////
     // Deploy new modules
     ////////////////////////////////////
-    console.log('HI3')
-    console.log(
-      config.settings.networkFeePercentage,
-      config.settings.networkAdmin,
-      config.settings.businessRole
-    )
-    console.log(config.contracts.TokenPriceProvider)
     const CommunityTransferManagerWrapper = await deployer.deploy(
         CommunityTransferManager,
         {},
@@ -63,9 +54,7 @@ const deploy = async (network) => {
         config.settings.networkAdmin,
         config.settings.businessRole,
     );
-    console.log('HI4')
     newModuleWrappers.push(CommunityTransferManagerWrapper);
-    console.log('HI5')
     ///////////////////////////////////////////////////
     // Update config and Upload new module ABIs
     ///////////////////////////////////////////////////

@@ -11,7 +11,6 @@ contract CommunityTransferManager is TransferManager, Managed {
   address private networkAdmin;
   bytes32 private roleToCheck;
 
-  event DebugU(uint256);
     // *************** Constructor ********************** //
 
     constructor(

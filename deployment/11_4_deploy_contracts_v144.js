@@ -44,7 +44,9 @@ const deploy = async (network) => {
     const DAIPointsManagerWrapper = await deployer.deploy(
         DAIPointsManager,
         {},
-        config.contracts.ModuleRegistry
+        config.contracts.ModuleRegistry,
+        config.settings.daiAddress,
+        config.settings.daiPointsAddress
     );
     newModuleWrappers.push(DAIPointsManagerWrapper);
 

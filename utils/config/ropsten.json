@@ -101,6 +101,8 @@
     },
     "recoveryPeriod": 480,
     "securityPeriod": 240,
-    "securityWindow": 240
+    "securityWindow": 240,
+    "daiAddress": "0x1CAf0Ed93dD34152000ACec9441D4D9ed0f55D7B",
+    "daiPointsAddress": "0xfB3DFf10fC73f9338c1255F7f95A419e5aed569e"
   }
 }

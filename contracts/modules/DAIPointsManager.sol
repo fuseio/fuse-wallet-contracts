@@ -17,8 +17,6 @@ contract DAIPointsManager is BaseModule, RelayerModule, OnlyOwnerModule {
     BaseModule(_registry, NAME)
     public
   {
-    require(_dai != address(0), "DAI address must not be null");
-    require(_daiPoints != address(0), "DAIPoints address must not be null");
     dai = _dai;
     daiPoints = _daiPoints;
   }

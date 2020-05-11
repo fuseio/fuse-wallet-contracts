@@ -31,6 +31,7 @@ describe("Test TransferManager", function () {
     let nonowner = accounts[2].signer;
     let recipient = accounts[3].signer;
     let spender = accounts[4].signer;
+    let relayer = accounts[9].signer;
 
     let kyber, registry, priceProvider, transferStorage, guardianStorage, transferModule, previousTransferModule, wallet;
 
@@ -284,6 +285,291 @@ describe("Test TransferManager", function () {
                 await doDirectTransfer({ token: erc20, to: recipient, amount: ETH_LIMIT + 10000 });
             });
         });
+    });
+
+    describe("Token transfers with fee", () => {
+        async function doDirectTransfer({ token, signer = owner, to, amount, fee = 0, relayed = false }) {
+            let toFundsBefore = (token == ETH_TOKEN ? await deployer.provider.getBalance(to.address) : await token.balanceOf(to.address));
+            let unspentBefore = await transferModule.getDailyUnspent(wallet.contractAddress);
+            const params = [wallet.contractAddress, token == ETH_TOKEN ? ETH_TOKEN : token.contractAddress, to.address, amount, fee, ZERO_BYTES32];
+            let txReceipt;
+            if (relayed) {
+                txReceipt = await manager.relay(transferModule, 'transferTokenWithFee', params, wallet, [signer]);
+            } else {
+                const tx = await transferModule.from(signer).transferTokenWithFee(...params);
+                txReceipt = await transferModule.verboseWaitForTransaction(tx);
+            }
+
+            if (fee !== 0) {
+                let logs = utils.parseLogs(txReceipt, transferModule, 'Transfer');
+                assert.equal(logs.length, 2, "should have generated two Transfer events");
+                let fundsAfter = (token == ETH_TOKEN ? await deployer.provider.getBalance(to.address) : await token.balanceOf(to.address));
+                let unspentAfter = await transferModule.getDailyUnspent(wallet.contractAddress);
+                assert.equal(fundsAfter.sub(toFundsBefore).toNumber(), amount, 'should have transfered amount');
+                let totalAmount = amount + fee;
+                let ethValue = (token == ETH_TOKEN ? totalAmount : (await priceProvider.getEtherValue(totalAmount, token.contractAddress)).toNumber());
+                if (ethValue < ETH_LIMIT) {
+                    assert.equal(unspentBefore[0].sub(unspentAfter[0]).toNumber(), ethValue, 'should have updated the daily spent in ETH');
+                }
+                if (relayed) {
+                    assert.equal(logs.filter(l => l.to === relayer.address).map(l => l.amount.toNumber()), fee, 'should have transfered fee')
+                } else {
+                    assert.equal(logs.filter(l => l.to === signer.address).map(l => l.amount.toNumber()), fee, 'should have transfered fee')
+                }
+            } else {
+                assert.isTrue(await utils.hasEvent(txReceipt, transferModule, "Transfer"), "should have generated Transfer event");
+                let fundsAfter = (token == ETH_TOKEN ? await deployer.provider.getBalance(to.address) : await token.balanceOf(to.address));
+                let unspentAfter = await transferModule.getDailyUnspent(wallet.contractAddress);
+                assert.equal(fundsAfter.sub(toFundsBefore).toNumber(), amount, 'should have transfered amount');
+                let ethValue = (token == ETH_TOKEN ? amount : (await priceProvider.getEtherValue(amount, token.contractAddress)).toNumber());
+                if (ethValue < ETH_LIMIT) {
+                    assert.equal(unspentBefore[0].sub(unspentAfter[0]).toNumber(), ethValue, 'should have updated the daily spent in ETH');
+                }
+            }
+            return txReceipt;
+        }
+
+        async function doPendingTransfer({ token, to, amount, fee = 0, delay, relayed = false }) {
+            let tokenAddress = token == ETH_TOKEN ? ETH_TOKEN : token.contractAddress;
+            let fundsBefore = (token == ETH_TOKEN ? await deployer.provider.getBalance(to.address) : await token.balanceOf(to.address));
+            const params = [wallet.contractAddress, tokenAddress, to.address, amount, fee, ZERO_BYTES32];
+            let txReceipt, tx;
+            if (relayed) {
+                txReceipt = await manager.relay(transferModule, 'transferTokenWithFee', params, wallet, [owner]);
+            } else {
+                tx = await transferModule.from(owner).transferTokenWithFee(...params);
+                txReceipt = await transferModule.verboseWaitForTransaction(tx);
+            }
+            assert.isTrue(await utils.hasEvent(txReceipt, transferModule, "PendingTransferCreated"), "should have generated PendingTransferCreated event");
+            let fundsAfter = (token == ETH_TOKEN ? await deployer.provider.getBalance(to.address) : await token.balanceOf(to.address));
+            assert.equal(fundsAfter.sub(fundsBefore).toNumber(), 0, 'should not have transfered amount');
+            if (delay == 0) {
+                let id = ethers.utils.solidityKeccak256(['uint8', 'address', 'address', 'uint256', 'bytes', 'uint256'], [ACTION_TRANSFER, tokenAddress, recipient.address, amount, ZERO_BYTES32, txReceipt.blockNumber]);
+                return id;
+            }
+            await manager.increaseTime(delay);
+            tx = await transferModule.executePendingTransfer(wallet.contractAddress, tokenAddress, recipient.address, amount, ZERO_BYTES32, txReceipt.blockNumber);
+            txReceipt = await transferModule.verboseWaitForTransaction(tx);
+            assert.isTrue(await utils.hasEvent(txReceipt, transferModule, "PendingTransferExecuted"), "should have generated PendingTransferExecuted event");
+            fundsAfter = (token == ETH_TOKEN ? await deployer.provider.getBalance(to.address) : await token.balanceOf(to.address));
+            assert.equal(fundsAfter.sub(fundsBefore).toNumber(), amount, 'should have transfered amount');
+        }
+
+        describe("Small token transfers (with zero fee)", () => {
+            it('should let the owner send ETH', async () => {
+                await doDirectTransfer({ token: ETH_TOKEN, to: recipient, amount: 10000 });
+            });
+            it('should let the owner send ETH (relayed)', async () => {
+                await doDirectTransfer({ token: ETH_TOKEN, to: recipient, amount: 10000, relayed: true });
+            });
+            it('should let the owner send ERC20', async () => {
+                await doDirectTransfer({ token: erc20, to: recipient, amount: 10 });
+            });
+            it('should let the owner send ERC20 (relayed)', async () => {
+                await doDirectTransfer({ token: erc20, to: recipient, amount: 10, relayed: true });
+            });
+            it('should only let the owner send ETH', async () => {
+                try {
+                    await doDirectTransfer({ token: ETH_TOKEN, signer: nonowner, to: recipient, amount: 10000 });
+                } catch (error) {
+                    assert.ok(await manager.isRevertReason(error, "must be an owner"));
+                }
+            });
+            it('should calculate the daily unspent when the owner send ETH', async () => {
+                let unspent = await transferModule.getDailyUnspent(wallet.contractAddress);
+                assert.equal(unspent[0].toNumber(), ETH_LIMIT, 'unspent should be the limit at the beginning of a period');
+                await doDirectTransfer({ token: ETH_TOKEN, to: recipient, amount: 10000 });
+                unspent = await transferModule.getDailyUnspent(wallet.contractAddress);
+                assert.equal(unspent[0].toNumber(), ETH_LIMIT - 10000, 'should be the limit minuss the transfer');
+            });
+            it('should calculate the daily unspent in ETH when the owner send ERC20', async () => {
+                let unspent = await transferModule.getDailyUnspent(wallet.contractAddress);
+                assert.equal(unspent[0].toNumber(), ETH_LIMIT, 'unspent should be the limit at the beginning of a period');
+                await doDirectTransfer({ token: erc20, to: recipient, amount: 10 });
+                unspent = await transferModule.getDailyUnspent(wallet.contractAddress);
+                let ethValue = await priceProvider.getEtherValue(10, erc20.contractAddress);
+                assert.equal(unspent[0].toNumber(), ETH_LIMIT - ethValue.toNumber(), 'should be the limit minuss the transfer');
+            });
+        })
+
+        describe("Small token transfers (with fee)", () => {
+            it('should let the owner send ETH', async () => {
+                await doDirectTransfer({ token: ETH_TOKEN, to: recipient, amount: 9000, fee: 1000 });
+            });
+            it('should let the owner send ETH (relayed)', async () => {
+                await doDirectTransfer({ token: ETH_TOKEN, to: recipient, amount: 9000, fee: 1000, relayed: true });
+            });
+            it('should let the owner send ERC20', async () => {
+                await doDirectTransfer({ token: erc20, to: recipient, amount: 9, fee: 1 });
+            });
+            it('should let the owner send ERC20 (relayed)', async () => {
+                await doDirectTransfer({ token: erc20, to: recipient, amount: 9, fee: 1, relayed: true });
+            });
+            it('should only let the owner send ETH', async () => {
+                try {
+                    await doDirectTransfer({ token: ETH_TOKEN, signer: nonowner, to: recipient, amount: 9000, fee: 1000 });
+                } catch (error) {
+                    assert.ok(await manager.isRevertReason(error, "must be an owner"));
+                }
+            });
+            it('should calculate the daily unspent when the owner send ETH', async () => {
+                let unspent = await transferModule.getDailyUnspent(wallet.contractAddress);
+                assert.equal(unspent[0].toNumber(), ETH_LIMIT, 'unspent should be the limit at the beginning of a period');
+                await doDirectTransfer({ token: ETH_TOKEN, to: recipient, amount: 9000, fee: 1000 });
+                unspent = await transferModule.getDailyUnspent(wallet.contractAddress);
+                assert.equal(unspent[0].toNumber(), ETH_LIMIT - 10000, 'should be the limit minuss the transfer');
+            });
+            it('should calculate the daily unspent in ETH when the owner send ERC20', async () => {
+                let unspent = await transferModule.getDailyUnspent(wallet.contractAddress);
+                assert.equal(unspent[0].toNumber(), ETH_LIMIT, 'unspent should be the limit at the beginning of a period');
+                await doDirectTransfer({ token: erc20, to: recipient, amount: 9, fee: 1 });
+                unspent = await transferModule.getDailyUnspent(wallet.contractAddress);
+                let ethValue = await priceProvider.getEtherValue(10, erc20.contractAddress);
+                assert.equal(unspent[0].toNumber(), ETH_LIMIT - ethValue.toNumber(), 'should be the limit minuss the transfer');
+            });
+        })
+
+        describe("Large token transfers (with zero fee)", () => {
+            it('should create and execute a pending ETH transfer', async () => {
+                await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 10000, delay: 3, relayed: false });
+            });
+            it('should create and execute a pending ETH transfer (relayed)', async () => {
+                await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 10000, delay: 3, relayed: true });
+            });
+            it('should create and execute a pending ERC20 transfer', async () => {
+                await doPendingTransfer({ token: erc20, to: recipient, amount: ETH_LIMIT + 10000, delay: 3, relayed: false });
+            });
+            it('should create and execute a pending ERC20 transfer (relayed)', async () => {
+                await doPendingTransfer({ token: erc20, to: recipient, amount: ETH_LIMIT + 10000, delay: 3, relayed: true });
+            });
+            it('should not execute a pending ETH transfer before the confirmation window', async () => {
+                try {
+                    await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 10000, delay: 1, relayed: false });
+                } catch (error) {
+                    assert.isTrue(await manager.isRevertReason(error, "outside of the execution window"), "should throw ");
+                }
+            });
+            it('should not execute a pending ETH transfer before the confirmation window (relayed)', async () => {
+                try {
+                    await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 10000, delay: 1, relayed: true });
+                } catch (error) {
+                    assert.isTrue(await manager.isRevertReason(error, "outside of the execution window"), "should throw ");
+                }
+            });
+            it('should not execute a pending ETH transfer after the confirmation window', async () => {
+                try {
+                    await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 10000, delay: 10, relayed: false });
+                } catch (error) {
+                    assert.isTrue(await manager.isRevertReason(error, "outside of the execution window"), "should throw ");
+                }
+            });
+            it('should not execute a pending ETH transfer after the confirmation window (relayed)', async () => {
+                try {
+                    await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 10000, delay: 10, relayed: true });
+                } catch (error) {
+                    assert.isTrue(await manager.isRevertReason(error, "outside of the execution window"), "should throw ");
+                }
+            });
+            it('should cancel a pending ETH transfer', async () => {
+                let id = await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 10000, delay: 0 });
+                await manager.increaseTime(1);
+                let tx = await transferModule.from(owner).cancelPendingTransfer(wallet.contractAddress, id);
+                let txReceipt = await transferModule.verboseWaitForTransaction(tx);
+                assert.isTrue(await utils.hasEvent(txReceipt, transferModule, "PendingTransferCanceled"), "should have generated PendingTransferCanceled event");
+                let executeAfter = await transferModule.getPendingTransfer(wallet.contractAddress, id);
+                assert.equal(executeAfter, 0, 'should have cancelled the pending transfer');
+            });
+            it('should cancel a pending ERC20 transfer', async () => {
+                let id = await doPendingTransfer({ token: erc20, to: recipient, amount: ETH_LIMIT + 10000, delay: 0 });
+                await manager.increaseTime(1);
+                let tx = await transferModule.from(owner).cancelPendingTransfer(wallet.contractAddress, id);
+                let txReceipt = await transferModule.verboseWaitForTransaction(tx);
+                assert.isTrue(await utils.hasEvent(txReceipt, transferModule, "PendingTransferCanceled"), "should have generated PendingTransferCanceled event");
+                let executeAfter = await transferModule.getPendingTransfer(wallet.contractAddress, id);
+                assert.equal(executeAfter, 0, 'should have cancelled the pending transfer');
+            });
+            it('should send immediately ETH to a whitelisted address', async () => {
+                await transferModule.from(owner).addToWhitelist(wallet.contractAddress, recipient.address);
+                await manager.increaseTime(3);
+                await doDirectTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 10000 });
+            });
+            it('should send immediately ERC20 to a whitelisted address', async () => {
+                await transferModule.from(owner).addToWhitelist(wallet.contractAddress, recipient.address);
+                await manager.increaseTime(3);
+                await doDirectTransfer({ token: erc20, to: recipient, amount: ETH_LIMIT + 10000 });
+            });
+        })
+
+        describe("Large token transfers (with fee)", () => {
+            it('should create and execute a pending ETH transfer', async () => {
+                await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 9000, fee: 1000, delay: 3, relayed: false });
+            });
+            it('should create and execute a pending ETH transfer (relayed)', async () => {
+                await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 9000, fee: 1000, delay: 3, relayed: true });
+            });
+            it('should create and execute a pending ERC20 transfer', async () => {
+                await doPendingTransfer({ token: erc20, to: recipient, amount: ETH_LIMIT + 9000, fee: 1000, delay: 3, relayed: false });
+            });
+            it('should create and execute a pending ERC20 transfer (relayed)', async () => {
+                await doPendingTransfer({ token: erc20, to: recipient, amount: ETH_LIMIT + 9000, fee: 1000, delay: 3, relayed: true });
+            });
+            it('should not execute a pending ETH transfer before the confirmation window', async () => {
+                try {
+                    await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 9000, fee: 1000, delay: 1, relayed: false });
+                } catch (error) {
+                    assert.isTrue(await manager.isRevertReason(error, "outside of the execution window"), "should throw ");
+                }
+            });
+            it('should not execute a pending ETH transfer before the confirmation window (relayed)', async () => {
+                try {
+                    await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 9000, fee: 1000, delay: 1, relayed: true });
+                } catch (error) {
+                    assert.isTrue(await manager.isRevertReason(error, "outside of the execution window"), "should throw ");
+                }
+            });
+            it('should not execute a pending ETH transfer after the confirmation window', async () => {
+                try {
+                    await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 9000, fee: 1000, delay: 10, relayed: false });
+                } catch (error) {
+                    assert.isTrue(await manager.isRevertReason(error, "outside of the execution window"), "should throw ");
+                }
+            });
+            it('should not execute a pending ETH transfer after the confirmation window (relayed)', async () => {
+                try {
+                    await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 9000, fee: 1000, delay: 10, relayed: true });
+                } catch (error) {
+                    assert.isTrue(await manager.isRevertReason(error, "outside of the execution window"), "should throw ");
+                }
+            });
+            it('should cancel a pending ETH transfer', async () => {
+                let id = await doPendingTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 9000, fee: 1000, delay: 0 });
+                await manager.increaseTime(1);
+                let tx = await transferModule.from(owner).cancelPendingTransfer(wallet.contractAddress, id);
+                let txReceipt = await transferModule.verboseWaitForTransaction(tx);
+                assert.isTrue(await utils.hasEvent(txReceipt, transferModule, "PendingTransferCanceled"), "should have generated PendingTransferCanceled event");
+                let executeAfter = await transferModule.getPendingTransfer(wallet.contractAddress, id);
+                assert.equal(executeAfter, 0, 'should have cancelled the pending transfer');
+            });
+            it('should cancel a pending ERC20 transfer', async () => {
+                let id = await doPendingTransfer({ token: erc20, to: recipient, amount: ETH_LIMIT + 9000, fee: 1000, delay: 0 });
+                await manager.increaseTime(1);
+                let tx = await transferModule.from(owner).cancelPendingTransfer(wallet.contractAddress, id);
+                let txReceipt = await transferModule.verboseWaitForTransaction(tx);
+                assert.isTrue(await utils.hasEvent(txReceipt, transferModule, "PendingTransferCanceled"), "should have generated PendingTransferCanceled event");
+                let executeAfter = await transferModule.getPendingTransfer(wallet.contractAddress, id);
+                assert.equal(executeAfter, 0, 'should have cancelled the pending transfer');
+            });
+            it('should send immediately ETH to a whitelisted address', async () => {
+                await transferModule.from(owner).addToWhitelist(wallet.contractAddress, recipient.address);
+                await manager.increaseTime(3);
+                await doDirectTransfer({ token: ETH_TOKEN, to: recipient, amount: ETH_LIMIT + 9000, fee: 1000 });
+            });
+            it('should send immediately ERC20 to a whitelisted address', async () => {
+                await transferModule.from(owner).addToWhitelist(wallet.contractAddress, recipient.address);
+                await manager.increaseTime(3);
+                await doDirectTransfer({ token: erc20, to: recipient, amount: ETH_LIMIT + 9000, fee: 1000 });
+            });
+        })
     });
 
     describe("Token Approvals", () => {

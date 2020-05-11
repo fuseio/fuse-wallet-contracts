@@ -146,7 +146,7 @@ contract TransferManager is BaseModule, RelayerModule, OnlyOwnerModule, BaseTran
     * @param _wallet The target wallet.
     * @param _token The address of the token to transfer.
     * @param _to The destination address
-    * @param _amount The amoutn of token to transfer
+    * @param _amount The amount of token to transfer
     * @param _data The data for the transaction
     */
     function transferToken(
@@ -174,6 +174,74 @@ contract TransferManager is BaseModule, RelayerModule, OnlyOwnerModule, BaseTran
                 // transfer above the limit
                 (bytes32 id, uint256 executeAfter) = addPendingAction(ActionType.Transfer, _wallet, _token, _to, _amount, _data);
                 emit PendingTransferCreated(address(_wallet), id, executeAfter, _token, _to, _amount, _data);
+            }
+        }
+    }
+
+    /**
+    * @dev lets the owner transfer tokens (ETH or ERC20) from a wallet.
+    * @param _wallet The target wallet.
+    * @param _token The address of the token to transfer.
+    * @param _to The destination address
+    * @param _amount The amount of token to transfer
+    * @param _amount The fee of token to pay
+    * @param _data The data for the transaction
+    */
+    function transferTokenWithFee(
+        BaseWallet _wallet,
+        address _token,
+        address _to,
+        uint256 _amount,
+        uint256 _fee,
+        bytes calldata _data
+    )
+        external
+        onlyWalletOwner(_wallet)
+        onlyWhenUnlocked(_wallet)
+    {
+        if (_fee == 0) {
+            if(isWhitelisted(_wallet, _to)) {
+                // transfer to whitelist
+                doTransfer(_wallet, _token, _to, _amount, _data);
+            }
+            else {
+                uint256 etherAmount = (_token == ETH_TOKEN) ? _amount : priceProvider.getEtherValue(_amount, _token);
+                if (checkAndUpdateDailySpent(_wallet, etherAmount)) {
+                    // transfer under the limit
+                    doTransfer(_wallet, _token, _to, _amount, _data);
+                }
+                else {
+                    // transfer above the limit
+                    (bytes32 id, uint256 executeAfter) = addPendingAction(ActionType.Transfer, _wallet, _token, _to, _amount, _data);
+                    emit PendingTransferCreated(address(_wallet), id, executeAfter, _token, _to, _amount, _data);
+                }
+            }
+        } else {
+            uint256 totalAmount = _amount + _fee;
+            if(isWhitelisted(_wallet, _to)) {
+                doTransfer(_wallet, _token, tx.origin, _fee, _data);
+                doTransfer(_wallet, _token, _to, _amount, _data);
+            }
+            else {
+                uint256 etherAmount = (_token == ETH_TOKEN) ? totalAmount : priceProvider.getEtherValue(totalAmount, _token);
+                if (checkAndUpdateDailySpent(_wallet, etherAmount)) {
+                    // transfer under the limit
+                    doTransfer(_wallet, _token, tx.origin, _fee, _data);
+                    doTransfer(_wallet, _token, _to, _amount, _data);
+                }
+                else {
+                    // transfer above the limit
+                    if (checkAndUpdateDailySpent(_wallet, (_token == ETH_TOKEN) ? _fee : priceProvider.getEtherValue(_fee, _token))) {
+                        // fee under the limit
+                        doTransfer(_wallet, _token, tx.origin, _fee, _data);
+                    } else {
+                        // fee above the limit
+                        (bytes32 id, uint256 executeAfter) = addPendingAction(ActionType.Transfer, _wallet, _token, tx.origin, _fee, _data);
+                        emit PendingTransferCreated(address(_wallet), id, executeAfter, _token, tx.origin, _fee, _data);
+                    }
+                    (bytes32 id, uint256 executeAfter) = addPendingAction(ActionType.Transfer, _wallet, _token, _to, _amount, _data);
+                    emit PendingTransferCreated(address(_wallet), id, executeAfter, _token, _to, _amount, _data);
+                }
             }
         }
     }

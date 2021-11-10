@@ -8,7 +8,7 @@ const Registry = require("../build/ModuleRegistry");
 const TestManager = require("../utils/test-manager");
 const { sortWalletByAddress, parseRelayReceipt } = require("../utils/utilities.js");
 
-describe("RecoveryManager", function () {
+describe.only("RecoveryManager", function () {
     this.timeout(10000);
 
     const manager = new TestManager();
@@ -25,7 +25,7 @@ describe("RecoveryManager", function () {
         deployer = manager.newDeployer();
         const registry = await deployer.deploy(Registry);
         const guardianStorage = await deployer.deploy(GuardianStorage);
-        guardianManager = await deployer.deploy(GuardianManager, {}, registry.contractAddress, guardianStorage.contractAddress, 24, 12);
+        guardianManager = await deployer.deploy(GuardianManager, {}, registry.contractAddress, guardianStorage.contractAddress);
         lockManager = await deployer.deploy(LockManager, {}, registry.contractAddress, guardianStorage.contractAddress, 24 * 5);
         recoveryManager = await deployer.deploy(RecoveryManager, {}, registry.contractAddress, guardianStorage.contractAddress, 36, 24 * 5);
         wallet = await deployer.deploy(Wallet);
@@ -42,11 +42,6 @@ describe("RecoveryManager", function () {
 
         for (const address of guardianAddresses) {
             await guardianManager.from(owner).addGuardian(wallet.contractAddress, address, { gasLimit: 500000 });
-        }
-
-        await manager.increaseTime(30);
-        for (let i = 1; i < guardianAddresses.length; i++) {
-            await guardianManager.confirmGuardianAddition(wallet.contractAddress, guardianAddresses[i]);
         }
         const count = (await guardianManager.guardianCount(wallet.contractAddress)).toNumber();
         assert.equal(count, guardians.length, `${guardians.length} guardians should be added`);

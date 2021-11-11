@@ -1,11 +1,7 @@
 {
-  "version": "1.4.2",
-  "createdAt": 1627388587,
+  "version": "1.6.1",
+  "createdAt": 1636617415,
   "modules": [
-    {
-      "address": "0x3879F0446E8F0ed428CCDAc5C373c163E9540D32",
-      "name": "GuardianManager"
-    },
     {
       "address": "0xf132640136FF929e5a1D067f21030ec079bfa239",
       "name": "LockManager"
@@ -41,7 +37,11 @@
     {
       "address": "0xc81a757c05F42e299E5c66CA1e28b3c10b0594Bb",
       "name": "WalletOwnershipManager"
+    },
+    {
+      "address": "0x8132d03887a08D75BaE1FF830A969b7DbE1Dadcf",
+      "name": "GuardianManager"
     }
   ],
-  "fingerprint": "0x3dbd402d"
+  "fingerprint": "0x12796146"
 }

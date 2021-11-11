@@ -73,7 +73,7 @@
     "GuardianStorage": "0xEAFD1b6433F50Dab45096A1e80b57253702e5aBE",
     "TransferStorage": "0xeFa3A100C05914e25A1282360aB8FF59164Dd086",
     "DappStorage": "0xb18F097241646fF8E4fA3396c9fc8c1cC8d4Cd31",
-    "GuardianManager": "0x3879F0446E8F0ed428CCDAc5C373c163E9540D32",
+    "GuardianManager": "0x8132d03887a08D75BaE1FF830A969b7DbE1Dadcf",
     "LockManager": "0xf132640136FF929e5a1D067f21030ec079bfa239",
     "RecoveryManager": "0xD201b3e96d6794fBB4Dc20A37e1a3757DEA971fD",
     "ApprovedTransfer": "0x15eAEE837143D5509d4A3c1Bb1388225e689E830",
@@ -89,5 +89,5 @@
     "CommunityManager": "0xC85ee948605f3AF743D27D2A57bA0f0FB9805F0F",
     "WalletOwnershipManager": "0xc81a757c05F42e299E5c66CA1e28b3c10b0594Bb"
   },
-  "gitCommit": "5a2f3238b3d2e5f202481c930236497c6ec093e0"
+  "gitCommit": "6108e12c4737be4cedec6ba5670fe2d177a46670"
 }

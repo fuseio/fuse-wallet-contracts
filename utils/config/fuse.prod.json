@@ -45,7 +45,7 @@
     },
     "uniswap": { "factory": "0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30" }
   },
-  "gitCommit": "1fafa40781784589b76137f46f9bc97d71a4521f",
+  "gitCommit": "6108e12c4737be4cedec6ba5670fe2d177a46670",
   "modules": {
     "ApprovedTransfer": "0x2cbE5fE3d259313F25Ac2Dd10FAB8B851561F366",
     "CommunityManager": "0x0D4926876ba1ada6E9b542e018eBeD517FFc8050",
@@ -53,7 +53,7 @@
     "DAIPointsManager": "0x602C6FbF83f5B758365DB51f38D311B09657f72c",
     "DappManager": "0x0cA65A4a7338Db5E94Aa083B3a60eEB75074f831",
     "DappStorage": "0xE89e7FE7d6Cac0Ac86639163025565581D282035",
-    "GuardianManager": "0x4777f535a4496Bb64dC51C48b33201FeD893d100",
+    "GuardianManager": "0x1D91b84b22AC32B7928Dc6BdB2A66C42Fc32F1C3",
     "GuardianStorage": "0xe7F1B45F9827483149aFFCaD7E6e8acC556206be",
     "LockManager": "0x8221d124f8255f61fC5f1dbb2382364B53355574",
     "MakerManager": "0x30A822984eEdf3e619D05d24Bb109986AC1B5038",

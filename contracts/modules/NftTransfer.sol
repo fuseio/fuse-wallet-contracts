@@ -4,6 +4,7 @@ import "./common/BaseModule.sol";
 import "./common/RelayerModule.sol";
 import "./common/OnlyOwnerModule.sol";
 import "../storage/GuardianStorage.sol";
+
 /**
  * @title NftTransfer
  * @dev Module to transfer NFTs (ERC721),
@@ -106,7 +107,6 @@ function transferNFT(
             methodData = abi.encodeWithSignature(
                 "transferFrom(address,address,uint256)", address(_wallet), _to, _tokenId);
         }
-        
         _wallet.invoke(_nftContract, 0, methodData);
         emit NonFungibleTransfer(address(_wallet), _nftContract, _tokenId, _to, _data);
     }

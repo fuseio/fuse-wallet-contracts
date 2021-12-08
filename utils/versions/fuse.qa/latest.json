@@ -1,11 +1,7 @@
 {
-  "createdAt": 1584434474,
-  "fingerprint": "0x29bf11da",
+  "version": "1.6.0",
+  "createdAt": 1636617966,
   "modules": [
-    {
-      "address": "0x7B0b061a38919bd49Def88968A2749F17110Be78",
-      "name": "GuardianManager"
-    },
     {
       "address": "0x50a92A7E524E417a76a8A8FE5397004037598B5E",
       "name": "LockManager"
@@ -53,7 +49,11 @@
     {
       "address": "0x4f1D78CFe11DA9EDdc15CEf36818c82DdFb6Bd57",
       "name": "DAIPointsManager"
+    },
+    {
+      "address": "0xadAc4eeB595341Bfebb4498Fb8A662eED0418d66",
+      "name": "GuardianManager"
     }
   ],
-  "version": "1.4.4"
+  "fingerprint": "0x8c92fd85"
 }

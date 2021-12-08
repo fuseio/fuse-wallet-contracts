@@ -1,7 +1,5 @@
 {
-  "CryptoKitties": {
-    "contract": "0x0000000000000000000000000000000000000000"
-  },
+  "CryptoKitties": { "contract": "0x0000000000000000000000000000000000000000" },
   "ENS": {
     "deployOwnRegistry": true,
     "domain": "fuse.eth",
@@ -45,11 +43,9 @@
       "pot": "0x3d9afbed6ee2c2d17749b003875eaa38c0ce0c7f",
       "tub": "0xa71937147b55deb8a530c7229c442fd3f31b7db2"
     },
-    "uniswap": {
-      "factory": "0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30"
-    }
+    "uniswap": { "factory": "0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30" }
   },
-  "gitCommit": "372c1b112a88b95da63542bcf492432cc8fbebfe",
+  "gitCommit": "6108e12c4737be4cedec6ba5670fe2d177a46670",
   "modules": {
     "ApprovedTransfer": "0xdC3321F6df4De89EE4C275Ec8E999dd21C818420",
     "CommunityManager": "0x3Ae358554CEAD619C93E653F1dE52c0895AA07e2",
@@ -57,7 +53,7 @@
     "DAIPointsManager": "0x4f1D78CFe11DA9EDdc15CEf36818c82DdFb6Bd57",
     "DappManager": "0x0cA65A4a7338Db5E94Aa083B3a60eEB75074f831",
     "DappStorage": "0xB8Aea68a6963628EDc907a966F7b2EF42BCb8B78",
-    "GuardianManager": "0x7B0b061a38919bd49Def88968A2749F17110Be78",
+    "GuardianManager": "0xadAc4eeB595341Bfebb4498Fb8A662eED0418d66",
     "GuardianStorage": "0xA61d9dDe6D90D5C412693d05ca9E0b299eE459eE",
     "LockManager": "0x50a92A7E524E417a76a8A8FE5397004037598B5E",
     "MakerManager": "0x16126D54A068FB26E76ff8209c9e6d11815248dc",
@@ -88,9 +84,7 @@
     "daiPointsAddress": "0x0000000000000000000000000000000000000000",
     "defaultLimit": "1000000000000000000",
     "deployer": {
-      "options": {
-        "url": "https://rpc.fuse.io"
-      },
+      "options": { "url": "https://rpc.fuse.io" },
       "type": "jsonrpc"
     },
     "feeRatio": 15,

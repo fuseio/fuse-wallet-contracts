@@ -17,3 +17,4 @@ node_modules/.bin/etherlime flatten modules/TokenExchanger.sol 0.5.4
 node_modules/.bin/etherlime flatten modules/TransferManager.sol 0.5.4
 node_modules/.bin/etherlime flatten modules/UniswapManager.sol 0.5.4
 node_modules/.bin/etherlime flatten modules/WalletOwnershipManager.sol 0.5.4
+node_modules/.bin/etherlime flatten upgrade/SimpleUpgrader.sol 0.5.4

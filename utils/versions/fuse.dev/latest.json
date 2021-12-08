@@ -1,6 +1,6 @@
 {
-  "version": "1.5.0",
-  "createdAt": 1630845216,
+  "version": "1.7.0",
+  "createdAt": 1638973538,
   "modules": [
     {
       "address": "0x3879F0446E8F0ed428CCDAc5C373c163E9540D32",
@@ -39,9 +39,17 @@
       "name": "WalletOwnershipManager"
     },
     {
+<<<<<<< HEAD
       "address": "0x8EaB65C95212750BDA8748a87a9994e1Bad25354",
       "name": "NftTransfer"
     }
   ],
   "fingerprint": "0xdf4e180a"
+=======
+      "address": "0x444cE70253F221E08B5B34dAbeA492847FFAaff5",
+      "name": "NftTransfer"
+    }
+  ],
+  "fingerprint": "0xd200af78"
+>>>>>>> Adding NFT transfer module
 }

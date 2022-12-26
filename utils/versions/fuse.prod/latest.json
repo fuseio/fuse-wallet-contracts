@@ -1,6 +1,6 @@
 {
-  "version": "1.6.0",
-  "createdAt": 1636617666,
+  "version": "1.7.0",
+  "createdAt": 1638973962,
   "modules": [
     {
       "address": "0x8221d124f8255f61fC5f1dbb2382364B53355574",
@@ -13,10 +13,6 @@
     {
       "address": "0xaA556969CB2782052A2eADEA32e660d40f4C4281",
       "name": "TokenExchanger"
-    },
-    {
-      "address": "0xFaDD67a8CfA641b7020bdd99a77BF2a88ECfeDd9",
-      "name": "NftTransfer"
     },
     {
       "address": "0x30A822984eEdf3e619D05d24Bb109986AC1B5038",
@@ -51,9 +47,9 @@
       "name": "DAIPointsManager"
     },
     {
-      "address": "0x1D91b84b22AC32B7928Dc6BdB2A66C42Fc32F1C3",
-      "name": "GuardianManager"
+      "address": "0x856283dD385f53FEAd47aA981517eEa564379cFC",
+      "name": "NftTransfer"
     }
   ],
-  "fingerprint": "0x33319a6d"
+  "fingerprint": "0x766a7d9f"
 }

@@ -19,8 +19,6 @@ contract NftTransfer is BaseModule, RelayerModule, OnlyOwnerModule {
 
     // The Guardian storage 
     GuardianStorage public guardianStorage;
-    // The address of the CryptoKitties contract
-    address public ckAddress;
 
     // *************** Events *************************** //
 
@@ -41,14 +39,12 @@ contract NftTransfer is BaseModule, RelayerModule, OnlyOwnerModule {
 
     constructor(
         ModuleRegistry _registry,
-        GuardianStorage _guardianStorage,
-        address _ckAddress
+        GuardianStorage _guardianStorage
     )
         BaseModule(_registry, NAME)
         public
     {
         guardianStorage = _guardianStorage;
-        ckAddress = _ckAddress;
     }
 
     // *************** External/Public Functions ********************* //
@@ -103,17 +99,13 @@ function transferNFT(
         onlyWhenUnlocked(_wallet)
     {
         bytes memory methodData;
-        if(_nftContract == ckAddress) {
-            methodData = abi.encodeWithSignature("transfer(address,uint256)", _to, _tokenId);
+        if(_safe) {
+            methodData = abi.encodeWithSignature(
+                "safeTransferFrom(address,address,uint256,bytes)", address(_wallet), _to, _tokenId, _data);
         } else {
-           if(_safe) {
-               methodData = abi.encodeWithSignature(
-                   "safeTransferFrom(address,address,uint256,bytes)", address(_wallet), _to, _tokenId, _data);
-           } else {
-               require(isERC721(_nftContract, _tokenId), "NT: Non-compliant NFT contract");
-               methodData = abi.encodeWithSignature(
-                   "transferFrom(address,address,uint256)", address(_wallet), _to, _tokenId);
-           }
+            require(isERC721(_nftContract, _tokenId), "NT: Non-compliant NFT contract");
+            methodData = abi.encodeWithSignature(
+                "transferFrom(address,address,uint256)", address(_wallet), _to, _tokenId);
         }
         _wallet.invoke(_nftContract, 0, methodData);
         emit NonFungibleTransfer(address(_wallet), _nftContract, _tokenId, _to, _data);

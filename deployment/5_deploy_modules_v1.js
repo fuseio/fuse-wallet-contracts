@@ -45,9 +45,7 @@ const deploy = async (network, secret) => {
         GuardianManager,
         {},
         config.contracts.ModuleRegistry,
-        GuardianStorageWrapper.contractAddress,
-        config.settings.securityPeriod || 0,
-        config.settings.securityWindow || 0);
+        GuardianStorageWrapper.contractAddress);
     // Deploy the LockManager module
     const LockManagerWrapper = await deployer.deploy(
         LockManager,

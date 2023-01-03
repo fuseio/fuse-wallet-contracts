@@ -1,0 +1,108 @@
+{
+    "CryptoKitties": {
+        "contract": "0x0000000000000000000000000000000000000000"
+    },
+    "ENS": {
+        "deployOwnRegistry": true,
+        "domain": "fuse.eth",
+        "ensRegistry": "0xE52fD02a171a5b84b31c488CD81C5E2a7694f506"
+    },
+    "Kyber": {
+        "contract": "0x6367c28EdcE73f9BFf751380c9f676D333A9FabB",
+        "deployOwn": true
+    },
+    "backend": {
+        "accounts": [
+            "0x06d1F553Eb335102aFBDB206b90Bde4334fD166c",
+            "0xbeCB19c6E48e3B0fF20Be140aE9512Aa65f921c8",
+            "0xca100D5005CF67f461b9901A1500424a2838037d",
+            "0x0fdb563D4A5F71A1bDdB9B7a73b3Aa49d3795AD9",
+            "0x593eeF3dE7943a47062171F3dBe43A342FCB3fB4",
+            "0x7DcAfD2d6e1D2c4691551F9Ad8214be76D2870EC"
+        ]
+    },
+    "contracts": {
+        "BaseWallet": "0xBadB814CC247Ff1A2743845D5aBCb2C0206393B7",
+        "CompoundRegistry": "0x1EAB659DCe3a205664f2d4977894A9f7EE51DA5f",
+        "DappRegistry": "0x329cb2262Dc29847FEA2482ddd8B8Cd3F4Fc6Be5",
+        "ENSManager": "0x24D97931636F4557C9B314CfE8991ceB894bb634",
+        "ENSResolver": "0x51459B454df7B209eD4F131250B5348111a00E8e",
+        "ModuleRegistry": "0x7CB06F9Beb7C89317C9579cEE62952838309f58b",
+        "MultiSigWallet": "0x05E03D9865A84A01eB1794bFabD43Ce0c9Fb7756",
+        "TokenPriceProvider": "0x595C1175C0C97D6E8bA5DD994e7bAB9b15be1Fe9",
+        "WalletFactory": "0xC9ae2Bc30931D7b0e5F5f82c707b1862494919ad"
+    },
+    "defi": {
+        "compound": {
+            "comptroller": "0x142d11cb90a2b40f7d0c55ed1804988dfc316fae",
+            "markets": {
+                "0xc4375b7de8af5a38a93548eb8453a498222c4ff2": "0x0a1e4d0b5c71b955c0a5993023fc48ba6e380496",
+                "0xd0a1e359811322d97991e03f863a0c30c2cf029c": "0xd83f707f003a1f0b1535028ab356fce2667ab855"
+            }
+        },
+        "maker": {
+            "migration": "0x786e119d9ee56ac6f5741ada57415cede8df75df",
+            "pot": "0x3d9afbed6ee2c2d17749b003875eaa38c0ce0c7f",
+            "tub": "0xa71937147b55deb8a530c7229c442fd3f31b7db2"
+        },
+        "uniswap": {
+            "factory": "0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30"
+        }
+    },
+    "gitCommit": "f1dc817d2df47c7c860fcab664b709bccd600022",
+    "modules": {
+        "ApprovedTransfer": "0x22eb0B2b42D41eaa6db6505513B852A045448c42",
+        "CommunityManager": "0x7d6f1f79D4bCee570fD0AD1A3CEfa5d7a3Fba744",
+        "CompoundManager": "0xC62aB5B0Ca3F270f8464f1971A14f209f56DD58D",
+        "DAIPointsManager": "0x4f1D78CFe11DA9EDdc15CEf36818c82DdFb6Bd57",
+        "DappManager": "0x0cA65A4a7338Db5E94Aa083B3a60eEB75074f831",
+        "DappStorage": "0x1D93823121C5AA5B908aFA7Cc3cEfaFC57553307",
+        "GuardianManager": "0xBA0e329D046b56D837EC8F49cf93368bc1Df836A",
+        "GuardianStorage": "0x06E1Fd3f7345a6C90c21D20A2a01B5551125D668",
+        "LockManager": "0xFBCcEBa79044a54Db42ff4fDE42856665A71202c",
+        "MakerManager": "0xF9a8C108b56702c97697c472B5dfB8b13004cc31",
+        "MakerV2Manager": "0x0a78ECd7db74B00C010177E930EA429F0C7e0242",
+        "NftTransfer": "0xC3C5E8f4c76A0c5dc876CfA0F26D38991983aE1c",
+        "RecoveryManager": "0x1Dfc2F139afbA0Bb61569406781e033bEfc80B43",
+        "TokenExchanger": "0xfD94EaB45b98FE5aE749405f92aadfb293e9E462",
+        "TokenTransfer": "0xb81eC49d93Ed336771C1bC6448bFB262403fEef4",
+        "TransferManager": "0x322f543fB31C1F3C04b1f8ffe42E1D0acAF940d2",
+        "TransferStorage": "0xdbB74F266c0E70DF4B76ED6fAF94AbE1f9aDeD76",
+        "UniswapManager": "0x03542406555ff6d338f768b910d102504d5d2Af4",
+        "WalletOwnershipManager": "0x04244bB2B611228962C65ccABC58aEefa0b09E4E"
+    },
+    "multisig": {
+        "autosign": true,
+        "owners": [
+            "0x06d1F553Eb335102aFBDB206b90Bde4334fD166c",
+            "0xbeCB19c6E48e3B0fF20Be140aE9512Aa65f921c8",
+            "0xca100D5005CF67f461b9901A1500424a2838037d",
+            "0x0fdb563D4A5F71A1bDdB9B7a73b3Aa49d3795AD9",
+            "0x593eeF3dE7943a47062171F3dBe43A342FCB3fB4",
+            "0x7DcAfD2d6e1D2c4691551F9Ad8214be76D2870EC"
+        ],
+        "threshold": 1
+    },
+    "settings": {
+        "daiAddress": "0x0000000000000000000000000000000000000000",
+        "daiPointsAddress": "0x0000000000000000000000000000000000000000",
+        "defaultLimit": "1000000000000000000",
+        "deployer": {
+            "options": {
+                "url": "https://rpc.fusespark.io"
+            },
+            "type": "jsonrpc"
+        },
+        "feeRatio": 15,
+        "lockPeriod": 480,
+        "privateKey": {
+            "options": {
+                "value": "ENTER_YOUR_PRIV_KEY_HERE"
+            },
+            "type": "plain"
+        },
+        "recoveryPeriod": 480,
+        "securityPeriod": 240,
+        "securityWindow": 240
+    }
+}

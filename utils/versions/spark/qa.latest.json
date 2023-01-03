@@ -1,0 +1,55 @@
+{
+    "version": "1.7.0",
+    "createdAt": 1672733480,
+    "modules": [
+        {
+            "address": "0xFBCcEBa79044a54Db42ff4fDE42856665A71202c",
+            "name": "LockManager"
+        },
+        {
+            "address": "0x1Dfc2F139afbA0Bb61569406781e033bEfc80B43",
+            "name": "RecoveryManager"
+        },
+        {
+            "address": "0xfD94EaB45b98FE5aE749405f92aadfb293e9E462",
+            "name": "TokenExchanger"
+        },
+        {
+            "address": "0xF9a8C108b56702c97697c472B5dfB8b13004cc31",
+            "name": "MakerManager"
+        },
+        {
+            "address": "0xC62aB5B0Ca3F270f8464f1971A14f209f56DD58D",
+            "name": "CompoundManager"
+        },
+        {
+            "address": "0x03542406555ff6d338f768b910d102504d5d2Af4",
+            "name": "UniswapManager"
+        },
+        {
+            "address": "0x22eb0B2b42D41eaa6db6505513B852A045448c42",
+            "name": "ApprovedTransfer"
+        },
+        {
+            "address": "0x7d6f1f79D4bCee570fD0AD1A3CEfa5d7a3Fba744",
+            "name": "CommunityManager"
+        },
+        {
+            "address": "0x04244bB2B611228962C65ccABC58aEefa0b09E4E",
+            "name": "WalletOwnershipManager"
+        },
+        {
+            "address": "0x322f543fB31C1F3C04b1f8ffe42E1D0acAF940d2",
+            "name": "TransferManager"
+        },
+        {
+            "address": "0xBA0e329D046b56D837EC8F49cf93368bc1Df836A",
+            "name": "GuardianManager"
+        },
+        {
+            "address": "0xC3C5E8f4c76A0c5dc876CfA0F26D38991983aE1c",
+            "name": "NftTransfer"
+        }
+    ],
+    "fingerprint": "0xcceba4ed"
+}

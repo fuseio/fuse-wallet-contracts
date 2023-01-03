@@ -32,30 +32,11 @@
         "TokenPriceProvider": "0x595C1175C0C97D6E8bA5DD994e7bAB9b15be1Fe9",
         "WalletFactory": "0xC9ae2Bc30931D7b0e5F5f82c707b1862494919ad"
     },
-    "defi": {
-        "compound": {
-            "comptroller": "0x142d11cb90a2b40f7d0c55ed1804988dfc316fae",
-            "markets": {
-                "0xc4375b7de8af5a38a93548eb8453a498222c4ff2": "0x0a1e4d0b5c71b955c0a5993023fc48ba6e380496",
-                "0xd0a1e359811322d97991e03f863a0c30c2cf029c": "0xd83f707f003a1f0b1535028ab356fce2667ab855"
-            }
-        },
-        "maker": {
-            "migration": "0x786e119d9ee56ac6f5741ada57415cede8df75df",
-            "pot": "0x3d9afbed6ee2c2d17749b003875eaa38c0ce0c7f",
-            "tub": "0xa71937147b55deb8a530c7229c442fd3f31b7db2"
-        },
-        "uniswap": {
-            "factory": "0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30"
-        }
-    },
     "gitCommit": "f1dc817d2df47c7c860fcab664b709bccd600022",
     "modules": {
         "ApprovedTransfer": "0x22eb0B2b42D41eaa6db6505513B852A045448c42",
         "CommunityManager": "0x7d6f1f79D4bCee570fD0AD1A3CEfa5d7a3Fba744",
         "CompoundManager": "0xC62aB5B0Ca3F270f8464f1971A14f209f56DD58D",
-        "DAIPointsManager": "0x4f1D78CFe11DA9EDdc15CEf36818c82DdFb6Bd57",
-        "DappManager": "0x0cA65A4a7338Db5E94Aa083B3a60eEB75074f831",
         "DappStorage": "0x1D93823121C5AA5B908aFA7Cc3cEfaFC57553307",
         "GuardianManager": "0xBA0e329D046b56D837EC8F49cf93368bc1Df836A",
         "GuardianStorage": "0x06E1Fd3f7345a6C90c21D20A2a01B5551125D668",
@@ -84,8 +65,6 @@
         "threshold": 1
     },
     "settings": {
-        "daiAddress": "0x0000000000000000000000000000000000000000",
-        "daiPointsAddress": "0x0000000000000000000000000000000000000000",
         "defaultLimit": "1000000000000000000",
         "deployer": {
             "options": {

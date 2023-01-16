@@ -1,55 +1,43 @@
 {
     "version": "1.7.0",
-    "createdAt": 1672733480,
+    "createdAt": 1673863088,
     "modules": [
         {
-            "address": "0xFBCcEBa79044a54Db42ff4fDE42856665A71202c",
+            "address": "0xFf55e7A5f0a7c5CbC11c545d260Be7B4c7DD5F31",
             "name": "LockManager"
         },
         {
-            "address": "0x1Dfc2F139afbA0Bb61569406781e033bEfc80B43",
+            "address": "0x68968F9A4817c4977D3dF8753c883f1586653699",
             "name": "RecoveryManager"
         },
         {
-            "address": "0xfD94EaB45b98FE5aE749405f92aadfb293e9E462",
+            "address": "0xeC3E7C147020928Bf3E2fAC334ff0c35bDD1AB34",
             "name": "TokenExchanger"
         },
         {
-            "address": "0xF9a8C108b56702c97697c472B5dfB8b13004cc31",
-            "name": "MakerManager"
-        },
-        {
-            "address": "0xC62aB5B0Ca3F270f8464f1971A14f209f56DD58D",
-            "name": "CompoundManager"
-        },
-        {
-            "address": "0x03542406555ff6d338f768b910d102504d5d2Af4",
-            "name": "UniswapManager"
-        },
-        {
-            "address": "0x22eb0B2b42D41eaa6db6505513B852A045448c42",
+            "address": "0xA788A9e6068585FE22dAC3b8EEb09A4b65786144",
             "name": "ApprovedTransfer"
         },
         {
-            "address": "0x7d6f1f79D4bCee570fD0AD1A3CEfa5d7a3Fba744",
+            "address": "0xF4022e0b04ddCaD6dFc657b22E1C8ee6adCdCcB1",
             "name": "CommunityManager"
         },
         {
-            "address": "0x04244bB2B611228962C65ccABC58aEefa0b09E4E",
+            "address": "0xe7Aa2b57129318bE7b21D13d42EB03Ad3d0F55c5",
             "name": "WalletOwnershipManager"
         },
         {
-            "address": "0x322f543fB31C1F3C04b1f8ffe42E1D0acAF940d2",
+            "address": "0xEba2648C97E7c632fd2D76f5907362D0D13E831F",
             "name": "TransferManager"
         },
         {
-            "address": "0xBA0e329D046b56D837EC8F49cf93368bc1Df836A",
+            "address": "0x3680e472f6a1ace8C8c3090Bf840056420d16780",
             "name": "GuardianManager"
         },
         {
-            "address": "0xC3C5E8f4c76A0c5dc876CfA0F26D38991983aE1c",
+            "address": "0x399589b014c5846e9C3aA313E63dc5F1F2231b4E",
             "name": "NftTransfer"
         }
     ],
-    "fingerprint": "0xcceba4ed"
+    "fingerprint": "0xe27163fb"
 }

@@ -44,62 +44,62 @@ const deploy = async (network) => {
     // Deploy utility contracts
     ////////////////////////////////////
 
-    const CompoundRegistryWrapper = await deployer.deploy(CompoundRegistry);
+    // const CompoundRegistryWrapper = await deployer.deploy(CompoundRegistry);
 
-    // configure Compound Registry
-    for (let underlying in config.defi.compound.markets) {
-        const cToken = config.defi.compound.markets[underlying];
-        const addUnderlyingTransaction = await CompoundRegistryWrapper.addCToken(underlying, cToken);
-        await CompoundRegistryWrapper.verboseWaitForTransaction(addUnderlyingTransaction, `Adding unerlying ${underlying} with cToken ${cToken} to the registry`);
-    }
-    const changeCompoundRegistryOwnerTx = await CompoundRegistryWrapper.changeOwner(config.contracts.MultiSigWallet);
-    await CompoundRegistryWrapper.verboseWaitForTransaction(changeCompoundRegistryOwnerTx, `Set the MultiSig as the owner of the CompoundRegistry`);
+    // // configure Compound Registry
+    // for (let underlying in config.defi.compound.markets) {
+    //     const cToken = config.defi.compound.markets[underlying];
+    //     const addUnderlyingTransaction = await CompoundRegistryWrapper.addCToken(underlying, cToken);
+    //     await CompoundRegistryWrapper.verboseWaitForTransaction(addUnderlyingTransaction, `Adding unerlying ${underlying} with cToken ${cToken} to the registry`);
+    // }
+    // const changeCompoundRegistryOwnerTx = await CompoundRegistryWrapper.changeOwner(config.contracts.MultiSigWallet);
+    // await CompoundRegistryWrapper.verboseWaitForTransaction(changeCompoundRegistryOwnerTx, `Set the MultiSig as the owner of the CompoundRegistry`);
 
     ////////////////////////////////////
     // Deploy new modules
     ////////////////////////////////////
 
-    const CompoundManagerWrapper = await deployer.deploy(
-        CompoundManager,
-        {},
-        config.contracts.ModuleRegistry,
-        config.modules.GuardianStorage,
-        config.defi.compound.comptroller,
-        CompoundRegistryWrapper.contractAddress
-    );
-    newModuleWrappers.push(CompoundManagerWrapper);
+    // const CompoundManagerWrapper = await deployer.deploy(
+    //     CompoundManager,
+    //     {},
+    //     config.contracts.ModuleRegistry,
+    //     config.modules.GuardianStorage,
+    //     config.defi.compound.comptroller,
+    //     CompoundRegistryWrapper.contractAddress
+    // );
+    // newModuleWrappers.push(CompoundManagerWrapper);
 
-    const UniswapManagerWrapper = await deployer.deploy(
-        UniswapManager,
-        {},
-        config.contracts.ModuleRegistry,
-        config.modules.GuardianStorage,
-        config.defi.uniswap.factory
-    );
-    newModuleWrappers.push(UniswapManagerWrapper);
+    // const UniswapManagerWrapper = await deployer.deploy(
+    //     UniswapManager,
+    //     {},
+    //     config.contracts.ModuleRegistry,
+    //     config.modules.GuardianStorage,
+    //     config.defi.uniswap.factory
+    // );
+    // newModuleWrappers.push(UniswapManagerWrapper);
 
     ///////////////////////////////////////////////////
     // Update config and Upload new module ABIs
     ///////////////////////////////////////////////////
 
-    configurator.updateModuleAddresses({
-        CompoundManager: CompoundManagerWrapper.contractAddress,
-        UniswapManager: UniswapManagerWrapper.contractAddress
-    });
+    // configurator.updateModuleAddresses({
+    //     CompoundManager: CompoundManagerWrapper.contractAddress,
+    //     UniswapManager: UniswapManagerWrapper.contractAddress
+    // });
 
-    configurator.updateInfrastructureAddresses({
-        CompoundRegistry: CompoundRegistryWrapper.contractAddress
-    });
+    // configurator.updateInfrastructureAddresses({
+    //     CompoundRegistry: CompoundRegistryWrapper.contractAddress
+    // });
 
     const gitHash = require('child_process').execSync('git rev-parse HEAD').toString('utf8').replace(/\n$/, '');
     configurator.updateGitHash(gitHash);
     await configurator.save();
 
-    await Promise.all([
-        abiUploader.upload(CompoundManagerWrapper, "modules"),
-        abiUploader.upload(UniswapManagerWrapper, "modules"),
-        abiUploader.upload(CompoundRegistryWrapper, "contracts")
-    ]);
+    // await Promise.all([
+    //     abiUploader.upload(CompoundManagerWrapper, "modules"),
+    //     abiUploader.upload(UniswapManagerWrapper, "modules"),
+    //     abiUploader.upload(CompoundRegistryWrapper, "contracts")
+    // ]);
 
     ////////////////////////////////////
     // Register new modules

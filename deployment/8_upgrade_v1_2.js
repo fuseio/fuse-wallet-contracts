@@ -42,31 +42,31 @@ const deploy = async (network) => {
     // Deploy new modules
     ////////////////////////////////////
 
-    const MakerManagerWrapper = await deployer.deploy(
-        MakerManager,
-        {},
-        config.contracts.ModuleRegistry,
-        config.modules.GuardianStorage,
-        config.defi.maker.tub,
-        config.defi.uniswap.factory
-    );
-    newModuleWrappers.push(MakerManagerWrapper);
+    // const MakerManagerWrapper = await deployer.deploy(
+    //     MakerManager,
+    //     {},
+    //     config.contracts.ModuleRegistry,
+    //     config.modules.GuardianStorage,
+    //     config.defi.maker.tub,
+    //     config.defi.uniswap.factory
+    // );
+    // newModuleWrappers.push(MakerManagerWrapper);
 
     ///////////////////////////////////////////////////
     // Update config and Upload new module ABIs
     ///////////////////////////////////////////////////
 
-    configurator.updateModuleAddresses({
-        MakerManager: MakerManagerWrapper.contractAddress
-    });
+    // configurator.updateModuleAddresses({
+    //     MakerManager: MakerManagerWrapper.contractAddress
+    // });
 
     const gitHash = require('child_process').execSync('git rev-parse HEAD').toString('utf8').replace(/\n$/, '');
     configurator.updateGitHash(gitHash);
     await configurator.save();
 
-    await Promise.all([
-        abiUploader.upload(MakerManagerWrapper, "modules"),
-    ]);
+    // await Promise.all([
+    //     abiUploader.upload(MakerManagerWrapper, "modules"),
+    // ]);
 
     ////////////////////////////////////
     // Register new modules

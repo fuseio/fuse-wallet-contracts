@@ -190,7 +190,6 @@ contract Storage {
     }
 }
 
-
 /**
  * @title GuardianStorage
  * @dev Contract storing the state of wallets related to guardians and lock.
@@ -323,7 +322,6 @@ contract GuardianStorage is Storage {
     }
 }
 
-
 library GuardianUtils {
 
     /**
@@ -397,7 +395,6 @@ library GuardianUtils {
         
 } 
 
-
 /**
  * @title Owned
  * @dev Basic contract to define an owner.
@@ -445,8 +442,6 @@ contract ERC20 {
     function approve(address spender, uint tokens) public returns (bool success);
     function transferFrom(address from, address to, uint tokens) public returns (bool success);
 }
-
-
 
 /**
  * @title ModuleRegistry
@@ -573,9 +568,6 @@ contract ModuleRegistry is Owned {
 
 }
 
-
-
-
 /**
  * @title BaseModule
  * @dev Basic module that contains some methods common to all modules.
@@ -680,8 +672,6 @@ contract BaseModule is Module {
         }
     }
 }
-
-
 
 /**
  * @title RelayerModule
@@ -929,10 +919,6 @@ contract RelayerModule is Module {
     }
 }
 
-
-
-
-
 /**
  * @title GuardianManager
  * @dev Module to manage the guardians of wallets.
@@ -952,26 +938,10 @@ contract GuardianManager is BaseModule, RelayerModule {
     bytes4 constant internal CONFIRM_ADDITION_PREFIX = bytes4(keccak256("confirmGuardianAddition(address,address)"));
     bytes4 constant internal CONFIRM_REVOKATION_PREFIX = bytes4(keccak256("confirmGuardianRevokation(address,address)"));
 
-    struct GuardianManagerConfig {
-        // the time at which a guardian addition or revokation will be confirmable by the owner
-        mapping (bytes32 => uint256) pending;
-    }
-
-    // the wallet specific storage
-    mapping (address => GuardianManagerConfig) internal configs;
     // the address of the Guardian storage 
     GuardianStorage public guardianStorage;
-    // the security period
-    uint256 public securityPeriod;
-    // the security window
-    uint256 public securityWindow;
 
     // *************** Events *************************** //
-
-    event GuardianAdditionRequested(address indexed wallet, address indexed guardian, uint256 executeAfter);
-    event GuardianRevokationRequested(address indexed wallet, address indexed guardian, uint256 executeAfter);
-    event GuardianAdditionCancelled(address indexed wallet, address indexed guardian);
-    event GuardianRevokationCancelled(address indexed wallet, address indexed guardian);
     event GuardianAdded(address indexed wallet, address indexed guardian);
     event GuardianRevoked(address indexed wallet, address indexed guardian);
     
@@ -999,16 +969,12 @@ contract GuardianManager is BaseModule, RelayerModule {
 
     constructor(
         ModuleRegistry _registry,
-        GuardianStorage _guardianStorage,
-        uint256 _securityPeriod,
-        uint256 _securityWindow
+        GuardianStorage _guardianStorage
     )
         BaseModule(_registry, NAME)
         public
     {
         guardianStorage = _guardianStorage;
-        securityPeriod = _securityPeriod;
-        securityWindow = _securityWindow;
     }
 
     // *************** External Functions ********************* //
@@ -1029,49 +995,8 @@ contract GuardianManager is BaseModule, RelayerModule {
         // solium-disable-next-line security/no-low-level-calls
         (bool success,) = _guardian.call.gas(5000)(abi.encodeWithSignature("owner()"));
         require(success, "GM: guardian must be EOA or implement owner()");
-        if(guardianStorage.guardianCount(_wallet) == 0) {
-            guardianStorage.addGuardian(_wallet, _guardian);
-            emit GuardianAdded(address(_wallet), _guardian);
-        } else {
-            bytes32 id = keccak256(abi.encodePacked(address(_wallet), _guardian, "addition"));
-            GuardianManagerConfig storage config = configs[address(_wallet)];
-            require(
-                config.pending[id] == 0 || now > config.pending[id] + securityWindow,
-                "GM: addition of target as guardian is already pending");
-            config.pending[id] = now + securityPeriod;
-            emit GuardianAdditionRequested(address(_wallet), _guardian, now + securityPeriod);
-        }
-    }
-
-    /**
-     * @dev Confirms the pending addition of a guardian to a wallet.
-     * The method must be called during the confirmation window and
-     * can be called by anyone to enable orchestration.
-     * @param _wallet The target wallet.
-     * @param _guardian The guardian.
-     */
-    function confirmGuardianAddition(BaseWallet _wallet, address _guardian) public onlyWhenUnlocked(_wallet) {
-        bytes32 id = keccak256(abi.encodePacked(address(_wallet), _guardian, "addition"));
-        GuardianManagerConfig storage config = configs[address(_wallet)];
-        require(config.pending[id] > 0, "GM: no pending addition as guardian for target");
-        require(config.pending[id] < now, "GM: Too early to confirm guardian addition");
-        require(now < config.pending[id] + securityWindow, "GM: Too late to confirm guardian addition");
         guardianStorage.addGuardian(_wallet, _guardian);
-        delete config.pending[id];
         emit GuardianAdded(address(_wallet), _guardian);
-    }
-
-    /**
-     * @dev Lets the owner cancel a pending guardian addition.
-     * @param _wallet The target wallet.
-     * @param _guardian The guardian.
-     */
-    function cancelGuardianAddition(BaseWallet _wallet, address _guardian) public onlyWalletOwner(_wallet) onlyWhenUnlocked(_wallet) {
-        bytes32 id = keccak256(abi.encodePacked(address(_wallet), _guardian, "addition"));
-        GuardianManagerConfig storage config = configs[address(_wallet)];
-        require(config.pending[id] > 0, "GM: no pending addition as guardian for target");
-        delete config.pending[id];
-        emit GuardianAdditionCancelled(address(_wallet), _guardian);
     }
 
     /**
@@ -1083,43 +1008,8 @@ contract GuardianManager is BaseModule, RelayerModule {
     function revokeGuardian(BaseWallet _wallet, address _guardian) external onlyWalletOwner(_wallet) {
         require(isGuardian(_wallet, _guardian), "GM: must be an existing guardian");
         bytes32 id = keccak256(abi.encodePacked(address(_wallet), _guardian, "revokation"));
-        GuardianManagerConfig storage config = configs[address(_wallet)];
-        require(
-            config.pending[id] == 0 || now > config.pending[id] + securityWindow,
-            "GM: revokation of target as guardian is already pending"); // TODO need to allow if confirmation window passed
-        config.pending[id] = now + securityPeriod;
-        emit GuardianRevokationRequested(address(_wallet), _guardian, now + securityPeriod);
-    }
-
-    /**
-     * @dev Confirms the pending revokation of a guardian to a wallet.
-     * The method must be called during the confirmation window and
-     * can be called by anyone to enable orchestration.
-     * @param _wallet The target wallet.
-     * @param _guardian The guardian.
-     */
-    function confirmGuardianRevokation(BaseWallet _wallet, address _guardian) public {
-        bytes32 id = keccak256(abi.encodePacked(address(_wallet), _guardian, "revokation"));
-        GuardianManagerConfig storage config = configs[address(_wallet)];
-        require(config.pending[id] > 0, "GM: no pending guardian revokation for target");
-        require(config.pending[id] < now, "GM: Too early to confirm guardian revokation");
-        require(now < config.pending[id] + securityWindow, "GM: Too late to confirm guardian revokation");
         guardianStorage.revokeGuardian(_wallet, _guardian);
-        delete config.pending[id];
         emit GuardianRevoked(address(_wallet), _guardian);
-    }
-
-    /**
-     * @dev Lets the owner cancel a pending guardian revokation.
-     * @param _wallet The target wallet.
-     * @param _guardian The guardian.
-     */
-    function cancelGuardianRevokation(BaseWallet _wallet, address _guardian) public onlyWalletOwner(_wallet) onlyWhenUnlocked(_wallet) {
-        bytes32 id = keccak256(abi.encodePacked(address(_wallet), _guardian, "revokation"));
-        GuardianManagerConfig storage config = configs[address(_wallet)];
-        require(config.pending[id] > 0, "GM: no pending guardian revokation for target");
-        delete config.pending[id];
-        emit GuardianRevokationCancelled(address(_wallet), _guardian);
     }
 
     /**
@@ -1179,3 +1069,4 @@ contract GuardianManager is BaseModule, RelayerModule {
         return 1;
     }
 }
+

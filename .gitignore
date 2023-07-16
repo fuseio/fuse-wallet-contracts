@@ -29,6 +29,7 @@ utils/config/*.json
 !utils/config/ganache.json
 !utils/config/fuse.dev.json
 !utils/config/fuse.qa.json
+!utils/config/spark.qa.json
 !utils/config/fuse.prod.json
 !utils/config/ropsten.json
 !utils/config/mainnet.json
@@ -38,5 +39,4 @@ utils/config/*.json
 ## Etherlime
 **/.etherlime-store
 
-
-
+logs*

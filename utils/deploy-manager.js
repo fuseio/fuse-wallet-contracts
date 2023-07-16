@@ -17,8 +17,8 @@ class DeployManager {
     constructor(network) {
         this.network = network;
 
-        if (network === 'fuse') {
-            defaultConfigs.gasPrice = 1000000000 //1 Gwei
+        if (network === 'fuse' || network === 'spark') {
+            defaultConfigs.gasPrice = 11000000000 //11 Gwei
         }
 
         this.env = process.env.CONFIG_ENVIRONMENT

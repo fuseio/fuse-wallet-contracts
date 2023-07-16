@@ -46,8 +46,7 @@ const deploy = async (network) => {
         NftTransfer,
         {},
         config.contracts.ModuleRegistry,
-        config.modules.GuardianStorage,
-        config.CryptoKitties.contract
+        config.modules.GuardianStorage
     );
     newModuleWrappers.push(NftTransferWrapper);
 

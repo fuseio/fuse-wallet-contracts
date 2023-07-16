@@ -222,8 +222,6 @@ contract ERC20 {
     function transferFrom(address from, address to, uint tokens) public returns (bool success);
 }
 
-
-
 /**
  * @title ModuleRegistry
  * @dev Registry of authorised modules. 
@@ -349,9 +347,6 @@ contract ModuleRegistry is Owned {
 
 }
 
-
-
-
 /**
  * @title BaseModule
  * @dev Basic module that contains some methods common to all modules.
@@ -456,8 +451,6 @@ contract BaseModule is Module {
         }
     }
 }
-
-
 
 /**
  * @title RelayerModule
@@ -721,7 +714,6 @@ contract Storage {
     }
 }
 
-
 /**
  * @title GuardianStorage
  * @dev Contract storing the state of wallets related to guardians and lock.
@@ -854,7 +846,6 @@ contract GuardianStorage is Storage {
     }
 }
 
-
 library GuardianUtils {
 
     /**
@@ -927,11 +918,6 @@ library GuardianUtils {
     }
         
 } 
-
-
-
-
-
 
 /**
  * @title LockManager
@@ -1061,3 +1047,4 @@ contract LockManager is BaseModule, RelayerModule {
         return 1;
     }
 }
+
